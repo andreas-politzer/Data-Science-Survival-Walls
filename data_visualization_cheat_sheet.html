@@ -1,0 +1,457 @@
+import os
+from weasyprint import HTML
+
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DATA VISUALIZATION SURVIVAL WALL - Andy's Edition v2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00c8ff;
+            --pink: #ff2f92;
+            --green: #00d84a;
+            --yellow: #ffb800;
+            --orange: #ff6b35;
+            --purple: #9b5cff;
+            --black: #151515;
+            --gray: #444444;
+            --light: #f4f4f4;
+            --paper: #ffffff;
+            --danger: #ff003c;
+        }
+        
+        @page {
+            size: A3 landscape;
+            margin: 0;
+        }
+        
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--paper); }
+            .page { margin: 10mm 0 20mm 0 !important; box-shadow: none !important; page-break-after: always; }
+            .no-print { display: none !important; }
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: var(--black);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7.2pt;
+            line-height: 1.3;
+        }
+
+        .page {
+            width: 420mm;
+            height: 297mm;
+            background: var(--paper);
+            margin: 10mm auto 20mm auto;
+            padding: 12mm 10mm;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 2.5mm;
+            overflow: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; margin: 0 0 1mm 0; font-weight: 700; }
+        h1 { font-size: 22pt; letter-spacing: 2px; color: var(--black); border-bottom: 4px solid var(--black); padding-bottom: 1.5mm; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 span { color: var(--cyan); font-family: 'Audiowide', sans-serif; font-size: 14pt; }
+        .subtitle { font-family: 'JetBrains Mono'; font-size: 8pt; font-weight: 700; color: var(--gray); text-transform: none; letter-spacing: 0; margin-top: 1mm; }
+        
+        h2 { font-size: 9.5pt; background: var(--black); color: var(--paper); padding: 1mm 3mm; display: inline-block; clip-path: polygon(0 0, 100% 0, 97% 100%, 0% 100%); margin-bottom: 2mm; }
+        
+        /* Layouts */
+        .grid-col-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; flex: 1; }
+        
+        /* Panels */
+        .panel {
+            background: var(--paper);
+            border: 2px solid var(--black);
+            padding: 3mm;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 3.5mm;
+        }
+        .panel::after { content: ''; position: absolute; top: 3px; left: 3px; right: -7px; bottom: -7px; z-index: -1; }
+
+        /* Neon Accents */
+        .border-cyan { border-top: 4px solid var(--cyan); }
+        .border-cyan::after { background: var(--cyan); }
+        .border-pink { border-top: 4px solid var(--pink); }
+        .border-pink::after { background: var(--pink); }
+        .border-green { border-top: 4px solid var(--green); }
+        .border-green::after { background: var(--green); }
+        .border-yellow { border-top: 4px solid var(--yellow); }
+        .border-yellow::after { background: var(--yellow); }
+        .border-orange { border-top: 4px solid var(--orange); }
+        .border-orange::after { background: var(--orange); }
+        .border-purple { border-top: 4px solid var(--purple); }
+        .border-purple::after { background: var(--purple); }
+        .border-danger { border-top: 4px solid var(--danger); border-color: var(--danger); }
+        .border-danger::after { background: var(--danger); }
+
+        /* Command Boxes */
+        .cmd-box { background: var(--light); border-left: 3px solid var(--black); padding: 1.5mm 2.2mm; margin-bottom: 1.5mm; }
+        .cmd-box.danger { border-left-color: var(--danger); background: #fff0f3; }
+        .cmd-name { font-weight: 800; font-size: 7.8pt; color: var(--black); margin-bottom: 1px; text-transform: uppercase; }
+        .cmd-code { font-family: 'JetBrains Mono', monospace; font-size: 6.8pt; color: var(--pink); background: var(--black); padding: 2px 5px; display: inline-block; margin-bottom: 1px; width: 100%; white-space: pre-wrap; line-height: 1.2; }
+        .cmd-desc { font-size: 6.8pt; color: var(--gray); margin-bottom: 1px; }
+        .cmd-use { font-size: 6.5pt; font-style: italic; color: var(--purple); }
+        .cmd-warn { font-size: 6.5pt; color: var(--danger); font-weight: bold; margin-top: 1px; }
+        
+        /* Flowchart Mini-Visuals */
+        .chart-flow { display: flex; align-items: center; gap: 2.5mm; margin: 1.2mm 0; background: var(--black); padding: 1.2mm; border-radius: 2px; }
+        .flow-preview { width: 45px; height: 22px; flex-shrink: 0; background: #222; border: 1px solid var(--gray); display: flex; align-items: center; justify-content: center; }
+        .flow-text { font-size: 6.5pt; color: var(--paper); font-family: 'JetBrains Mono', monospace; }
+
+        /* Emergency Zone */
+        .emergency { background: var(--black); color: var(--paper); border: 3px solid var(--danger); padding: 3mm; box-shadow: 0 0 10px rgba(255,0,60,0.3); }
+        .emergency h3 { color: var(--danger); border-bottom: 1px solid var(--gray); margin-top: 0; padding-bottom: 1mm; font-size: 8.5pt; text-transform: uppercase; }
+        .emergency .cmd-box { background: #1a1a1a; border-left-color: var(--danger); margin-bottom: 1.5mm; padding: 1.5mm; }
+        .emergency .cmd-name { color: var(--paper); }
+        .emergency .cmd-code { color: var(--yellow); background: #333; }
+        
+        /* Mantras */
+        .mantra-box { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 8.5pt; font-weight: bold; color: var(--black); margin: 1.5mm 0; padding: 2mm; border: 2px dashed var(--orange); background: var(--paper); text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print" style="max-width: 420mm; margin: 6mm auto 0 auto; padding: 0 10mm;">
+        <a href="index.html" style="font-family: 'Orbitron', sans-serif; font-size: 9pt; text-decoration: none; color: var(--cyan); font-weight: bold; display: inline-flex; align-items: center; gap: 6px;">
+            <span>⟵</span> BACK TO COMMAND CENTER
+        </a>
+    </div>
+
+    <div class="page">
+        <div>
+            <h1>DATA VIZ SURVIVAL WALL <span>// Andy's Edition v2.0</span></h1>
+            <div class="subtitle">A3 Reference Sheet • Page 1: Matplotlib OOP Foundation, Advanced Statistical Shading Frameworks & Seaborn Relational/Distribution Grids</div>
+        </div>
+        
+        <div class="grid-col-4">
+            
+            <div>
+                <div class="panel border-cyan">
+                    <h2>1. MATPLOTLIB CANVAS ENGINE</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">Explicit Subplot Grid Initialization</div>
+                        <div class="cmd-code">fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(14, 9), sharex=False, sharey=False, gridspec_kw={'height_ratios': [2, 1]})</div>
+                        <div class="cmd-desc">Instantiates explicit OOP canvas window frame object matrix. "fig" controls native window parameters; "ax" yields an N-dimensional coordinate array tracking workspaces.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Axis Targeting, Line Styles & Bounds</div>
+                        <div class="cmd-code">ax[0, 1].plot(x, y, color='#00c8ff', linestyle='--', linewidth=2.5, alpha=0.9, marker='o', label='Telemetry')&#10;ax[0, 1].set_xlim(left=-1, right=100)&#10;ax[0, 1].set_ylim(bottom=0, top=max(y)*1.1)</div>
+                        <div class="cmd-desc">Targets a localized coordinate index cell. Enforces rigid viewport boundaries to lock data points within specific pixel tracking dimensions.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Grid Grid Diagnostic Overlays</div>
+                        <div class="cmd-code">ax[1, 0].grid(True, which='both', linestyle=':', alpha=0.5, color='gray')&#10;ax[1, 0].minorticks_on()</div>
+                        <div class="cmd-desc">Injects sharp, scannable coordinate line paths behind geometries. Minor ticks provide exact measurement references across dense fields.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Legend Position Anchoring</div>
+                        <div class="cmd-code">ax[0, 0].legend(loc='upper left', bbox_to_anchor=(1.02, 1), title='Engine Sektors', title_fontsize=9, frameon=True, shadow=True, facecolor='#f4f4f4')</div>
+                        <div class="cmd-desc">Binds descriptive variable labels. Custom bounding anchors push legend maps entirely outside active chart windows to stop geometry overlaps.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-yellow">
+                    <h2>2. ADVANCED CANVAS ANNOTATIONS</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">Statistical Threshold Marker Lines</div>
+                        <div class="cmd-code">ax.axvline(x=0 - se * t_score, color='red', linestyle='-', linewidth=2, label='t-score * se')&#10;ax.axvline(x=0 + se * critical_value, color='blue', linestyle=':', label='critical value')</div>
+                        <div class="cmd-desc">Draws infinite vertical or horizontal boundary lines across the viewport canvas layout, independent of localized sample scaling.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Distribution Tail Shading & Custom Fills</div>
+                        <div class="cmd-code">ax.fill_between(xt, t.pdf(xt, loc=0, scale=se, df=df), where=(-critical_value * se &gt; xt) | (xt &gt; critical_value * se), color='blue', alpha=0.5, label='alpha / critical region')&#10;ax.fill_between(xt, t.pdf(xt, loc=0, scale=se, df=df), where=(-abs(t_score * se) &gt; xt) | (xt &gt; abs(t_score * se)), color='red', alpha=0.5, label='p-value')</div>
+                        <div class="cmd-desc">Shades specific bounded polygons between execution limits or functional thresholds. Vital for highlighting critical statistical regions, p-values, or tail alpha anomalies.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-pink">
+                    <h2>3. SEABORN: RELATIONAL CONNECTIONS</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Macro Figure-Level Interface Grid</div>
+                        <div class="cmd-code">g = sns.relplot(data=df, x='feature_x', y='feature_y', kind='scatter', row='device_class', col='environment', height=5, aspect=1.2)</div>
+                        <div class="cmd-desc">Instantiates multi-faceted coordinate arrays mapping discrete category dimensions across isolated grid facets simultaneously.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">kind='scatter' (High-Dimensional Parameter Maps)</div>
+                        <div class="chart-flow">
+                            <div class="flow-preview">
+                                <svg width="35" height="15">
+                                    <circle cx="8" cy="11" r="1.5" fill="#00c8ff"/><circle cx="16" cy="4" r="3.5" fill="#ff2f92"/><circle cx="26" cy="8" r="2" fill="#00c8ff"/>
+                                </svg>
+                            </div>
+                            <div class="flow-text">kind='scatter', hue='group', style='status', size='magnitude'</div>
+                        </div>
+                        <div class="cmd-code">sns.relplot(..., hue='user_tier', style='network_status', size='payload_mb', sizes=(10, 300), palette='magma', alpha=0.8)</div>
+                        <div class="cmd-desc"><b>hue:</b> Visual grouping color map.<br><b>style:</b> Toggles localized node token designs.<br><b>size/sizes:</b> Dynamically scales node sizes based on continuous scale measurements.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">kind='line' (Continuous Trajectory Tracking)</div>
+                        <div class="chart-flow">
+                            <div class="flow-preview">
+                                <svg width="35" height="15">
+                                    <path d="M2,13 L12,6 L22,9 L32,2" stroke="#00d84a" fill="none" stroke-width="1.5"/>
+                                    <path d="M2,11 L12,8 L22,7 L32,4" stroke="#ff2f92" fill="none" stroke-width="1" stroke-dasharray="2,2"/>
+                                </svg>
+                            </div>
+                            <div class="flow-text">kind='line', hue='source', style='type', errorbar='ci'</div>
+                        </div>
+                        <div class="cmd-code">sns.relplot(..., kind='line', errorbar=('ci', 95), n_boot=500, estimator='mean', markers=True, dashes=False)</div>
+                        <div class="cmd-desc">Aggregates sequential trend data. Calculates bootstrap confidence intervals across continuous streams automatically.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-purple">
+                    <h2>4. SEABORN: DISTRIBUTION DENSITY</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Macro Figure-Level Allocation Call</div>
+                        <div class="cmd-code">g = sns.displot(data=df, x='response_time_ms', hue='server_node', kind='hist', col='datacenter')</div>
+                        <div class="cmd-desc">Master execution function mapping statistical density patterns, sample clusters, and absolute measurement frequencies.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">kind='hist' (Univariate Binned Metrics)</div>
+                        <div class="chart-flow">
+                            <div class="flow-preview">
+                                <svg width="35" height="15">
+                                    <rect x="2" y="6" width="8" height="9" fill="#00c8ff" opacity="0.7"/><rect x="11" y="2" width="8" height="13" fill="#ff2f92" opacity="0.7"/><rect x="20" y="8" width="8" height="7" fill="#00c8ff" opacity="0.7"/>
+                                </svg>
+                            </div>
+                            <div class="flow-text">kind='hist', bins=50, kde=True, multiple='stack'</div>
+                        </div>
+                        <div class="cmd-code">sns.displot(..., kind='hist', bins='auto', multiple='dodge', log_scale=True, element='step', fill=True, shrink=0.85)</div>
+                        <div class="cmd-desc"><b>multiple:</b> Toggles group layouts (`stack`, `dodge`, `fill`).<br><b>log_scale:</b> Applies base-10 logarithmic transformations directly to skewed sample distributions.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">kind='kde' (Kernel Density Estimation)</div>
+                        <div class="chart-flow">
+                            <div class="flow-preview">
+                                <svg width="35" height="15">
+                                    <path d="M2,13 Q12,1 20,8 T34,13" stroke="#9b5cff" fill="none" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div class="flow-text">kind='kde', fill=True, bw_adjust=0.4, common_norm=False</div>
+                        </div>
+                        <div class="cmd-code">sns.displot(..., kind='kde', fill=True, bw_adjust=0.6, cut=0, thresh=0.05, cumulative=False)</div>
+                        <div class="cmd-desc"><b>bw_adjust:</b> Modifies smoothing parameters. Low filters catch local noise spikes; high constants expose macro trends.<br><b>common_norm:</b> Evaluates sub-category normalization rules independently.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">kind='ecdf' (Empirical Cumulative Profiles)</div>
+                        <div class="chart-flow">
+                            <div class="flow-preview">
+                                <svg width="35" height="15">
+                                    <path d="M3,13 C10,13 15,2 32,2" stroke="#ffb800" fill="none" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div class="flow-text">kind='ecdf', stat='proportion', complementary=False</div>
+                        </div>
+                        <div class="cmd-desc">Plots the exact fraction of observations lower than each step value. Avoids binning bias entirely. Perfect for analyzing strict SLA percentiles.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-green">
+                    <h2>5. CANVAS TERMINAL LABELING & LAYERS</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Axes Local Matrix Text Injection</div>
+                        <div class="cmd-code">ax.set_title("Target Spectrum", fontsize=12, fontweight='bold', pad=14, color='#151515')&#10;ax.set_xlabel("Frequency [Hz]", fontsize=10, labelpad=8)&#10;ax.set_ylabel("Amplitude [dB]")</div>
+                        <div class="cmd-desc">Applies sharp, clean string labels to specific plotting grids. Padding parameters push labels away from borders to maximize whitespace.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Figure-Level Macro Canvas Manipulation</div>
+                        <div class="cmd-code">g.fig.suptitle("Universal Telemetry Matrix", fontsize=16, fontweight='black', y=1.04)&#10;g.set_axis_labels("Independent Input (X)", "Dependent Target (Y)")&#10;g.set_titles(row_template="{row_name} Sector", col_template="{col_name} Axis")</div>
+                        <div class="cmd-desc"><b>Crucial Structural Concept:</b> Figure-level outputs bypass local subplot arrays. Universal layout modifications must target the parent canvas object directly.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-danger">
+                    <h2>6. AXES-LEVEL TARGETING SYSTEM</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Explicit Multi-Axis Matrix Distribution</div>
+                        <div class="cmd-code">sns.scatterplot(data=df, x='X', y='Y', hue='G', ax=ax[0, 0])&#10;sns.histplot(data=df, x='V', kde=True, ax=ax[0, 1])&#10;sns.boxplot(data=df, x='C', y='V', ax=ax[1, 0])&#10;sns.lineplot(data=df, x='T', y='V', ax=ax[1, 1])</div>
+                        <div class="cmd-desc">Axes-level commands accept specific target coordinate arrays via the `ax=` argument. Routes execution directly inside complex dashboard configurations.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-yellow" style="margin-bottom: 0;">
+                    <h2>7. MASTER MANTRAS SEKTOR A</h2>
+                    <div class="mantra-box" style="border-color: var(--danger); color: var(--danger); font-size: 8.2pt;">
+                        FIGURE-LEVEL CALLS GENERATE THE CANVAS STRUCTURE.<br>AXES-LEVEL CALLS DRAW INSIDE A SPECIFIC TARGET CELL.
+                    </div>
+                    <div class="mantra-box" style="border-color: var(--cyan); color: var(--black); font-size: 7.5pt;">
+                        ALWAYS MANUALLY PUSH OUT TITLES (y=1.05)<br>WHEN COMBINING SUPTITLE WITH MULTIPLE FACETS!
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="page">
+        <div>
+            <h1>DATA VIZ SURVIVAL WALL <span>// Andy's Edition v2.0</span></h1>
+            <div class="subtitle">A3 Reference Sheet • Page 2: Seaborn Categorical Profiles, Interactive Plotly Frameworks & Cross-Language R ggplot2 Compilation</div>
+        </div>
+        
+        <div class="grid-col-4">
+            
+            <div>
+                <div class="panel border-purple">
+                    <h2>8. SEABORN: CATEGORICAL MATRIX</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Macro Figure-Level Interface</div>
+                        <div class="cmd-code">g = sns.catplot(data=df, x='category', y='metric', kind='box', col='cluster_id', row='tenant_tier', height=4, aspect=1.1)</div>
+                        <div class="cmd-desc">Executes structural factor comparisons across categorical dimensions. Automatically manages complex facet alignments.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Categorical Scatters (Point Clouds)</div>
+                        <div class="cmd-code">kind='strip' / kind='swarm'</div>
+                        <div class="cmd-desc"><b>strip:</b> Spreads points randomly along the categorical axis using micro horizontal jitter. Pass `dodge=True` to split hue groups.<br><b>swarm:</b> Positions data tokens algorithmically to prevent overlaps, forming a natural density silhouette. Points will clip if space is locked.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Statistical Distributions (Summary Geometry)</div>
+                        <div class="cmd-code">kind='box' / kind='violin' / kind='boxen'</div>
+                        <div class="cmd-desc"><b>box:</b> Displays median, IQR boxes, and whiskers. Outliers beyond $1.5 \times \text{IQR}$ are plotted as individual points.<br><b>violin:</b> Combines standard boxplot indicators with mirrored KDE profiles. Use `split=True` to contrast two internal hue categories.<br><b>boxen:</b> Renders letter-value plots, scaling geometric percentile depths dynamically to map big data distributions.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Statistical Estimations (Aggregations)</div>
+                        <div class="cmd-code">kind='bar' / kind='count' / kind='point'</div>
+                        <div class="cmd-desc"><b>bar:</b> Plots central tendencies alongside bootstrap error intervals. Set custom statistical calculations via `estimator=np.median`.<br><b>count:</b> Discrete event tracker. Enforce static bar ordering using order arguments: `order=df['cat'].value_counts().index`.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-orange">
+                    <h2>9. INTERACTIVE TIER: PLOTLY EXPRESS</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Interactive Web Scatter Engine</div>
+                        <div class="cmd-code">import plotly.express as px&#10;fig = px.scatter(df, x="gdp_per_cap", y="life_exp", color="continent", size="population", hover_name="country", hover_data=["iso_code", "gdp_year"], log_x=True, trendline="ols", trendline_color_override="red")&#10;fig.show()</div>
+                        <div class="cmd-desc">Generates browser-ready HTML vector graphs. <b>hover_data:</b> Injects custom columns into context boxes. <b>trendline="ols":</b> Calculates ordinary least squares regressions live.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Bivariate Distribution Overlays</div>
+                        <div class="cmd-code">fig = px.histogram(df, x="transaction_vol", y="fees", color="payment_method", barmode="overlay", marginal="box", text_auto='.2f')</div>
+                        <div class="cmd-desc"><b>barmode:</b> Layout settings (`group`, `overlay`, `relative`). <b>marginal:</b> Injects secondary box, violin, or rug distribution subplots right above the main chart layout.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Interactive Faceting & Template Shifts</div>
+                        <div class="cmd-code">fig = px.box(df, x="weekday", y="throughput", color="node_type", facet_col="region", points="all")&#10;fig.update_layout(template="plotly_dark", title_text="Live Cluster Diagnostics", font=dict(family="JetBrains Mono", size=10))</div>
+                        <div class="cmd-desc">Deploys multi-panel faceting systems across columns automatically. Layout settings are updated using explicit dict configurations via `.update_layout()`.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-green">
+                    <h2>10. MULTI-LANGUAGE DEPLOYMENT: R GGPLOT2</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">The Grammar of Graphics Framework</div>
+                        <div class="cmd-code">library(ggplot2)&#10;ggplot(data = df, aes(x = asset_weight, y = return_rate, color = factor(strategy_id), size = volatility)) +&#10;  geom_point(alpha = 0.65, shape = 16) +&#10;  geom_smooth(method = "lm", formula = y ~ x, se = TRUE, level = 0.95, color = "black") +&#10;  scale_color_viridis_d(option = "cividis")</div>
+                        <div class="cmd-desc"><b>Core Design Philosophy:</b> Modular plot building using explicit additive layer additions (`+`). Declaring coordinates inside the parent layout maps aesthetic variables globally across all subsequent geometric layers.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Frequency Layer Configurations</div>
+                        <div class="cmd-code">ggplot(df, aes(x = clean_price, fill = asset_class)) +&#10;  geom_histogram(binwidth = 250, position = "dodge", alpha = 0.8) +&#10;  geom_density(aes(y = ..density.. * 250), alpha = 0.2, color = "black")</div>
+                        <div class="cmd-desc">Applies geometric transformations directly to features. Manage bar alignment behaviors explicitly using positional configuration settings: `position = "stack" | "dodge" | "fill"`.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Faceting Arrays & Scale Decoupling</div>
+                        <div class="cmd-code">ggplot(df, aes(x = input, y = output)) + geom_point() +&#10;  facet_wrap(~ region_code, scales = "free_y", nrow = 3)</div>
+                        <div class="cmd-desc">Splits graphics into sub-view matrix panels. <b>scales="free_y":</b> Decouples shared coordinate axis ranges to prevent structural visibility clipping across small groups.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-yellow">
+                    <h2>11. GGPLOT2 META-DATA & STYLING</h2>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Universal Annotation Injection</div>
+                        <div class="cmd-code">p + labs(title = "Network Telemetry Log", subtitle = "Node-Beta performance evaluation", x = "Request Latency [ms]", y = "Dropped Packets", color = "Cluster Tier", caption = "Source: Infrastructure Core")</div>
+                        <div class="cmd-desc">Appends high-level text descriptions across all chart layers simultaneously via an isolated macro command block.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">Theme Customization Overrides</div>
+                        <div class="cmd-code">p + theme_minimal() +&#10;  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, face = "bold"), legend.position = "bottom", panel.grid.minor = element_blank())</div>
+                        <div class="cmd-desc">Controls styling layout parameters completely outside spatial coordinates. `element_blank()` strips rendering tracks completely for crisp clean printing.</div>
+                    </div>
+                </div>
+
+                <div class="panel emergency">
+                    <h2>12. CRITICAL LEGEND MODIFICATION OVERRIDES</h2>
+                    <h3>MANIPULATING AUTOMATED COLOR MAPS</h3>
+                    <div class="cmd-box">
+                        <div class="cmd-name">Python Figure-Level Legend Target Patch</div>
+                        <div class="cmd-code">g = sns.relplot(..., hue='class')&#10;g._legend.set_title("Target Index Profile")&#10;plt.setp(g._legend.get_texts(), fontsize='small')</div>
+                        <div class="cmd-desc">Figure-level execution hides legend objects in underlying configurations. Access internal parameters via target overrides (`g._legend`).</div>
+                    </div>
+                    <div class="cmd-box">
+                        <div class="cmd-name">R ggplot2 Scaled Legend Patch</div>
+                        <div class="cmd-code">ggplot(df, aes(x=A, y=B, fill=Group)) + geom_boxplot() +&#10;  scale_fill_manual(values = c("red", "blue"), name = "Tiers")</div>
+                        <div class="cmd-desc">In R, changing legend labels requires targeting the matching aesthetic scaling function (`scale_fill_*` or `scale_color_*`) directly.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-orange" style="margin-bottom: 0;">
+                    <h2>13. MASTER MANTRAS SEKTOR B</h2>
+                    <div class="mantra-box" style="border-color: var(--danger); color: var(--danger); font-size: 8pt;">
+                        IN GGPLOT2, THE '+' JOIN OPERATOR MUST ALWAYS<br>SIT AT THE END OF THE LINE, NEVER AT THE START!
+                    </div>
+                    <div class="mantra-box" style="border-color: var(--purple); color: var(--purple); font-size: 7.2pt;">
+                        PLOTLY INJECTS VECTOR CODE INTO BROWSERS.<br>GGPLOT2 BUILDS STATIC MATRICES VIA THE GRAMMAR LAW.
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>
+"""
+
+# HTML-Datei lokal speichern
+with open("data_visualization_cheat_sheet.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+# WeasyPrint PDF-Generierung (A3 Landscape)
+HTML("data_visualization_cheat_sheet.html").write_pdf("data_visualization_cheat_sheet.pdf")
+
+print("Zwei epische A3-Seiten wurden erfolgreich kompiliert.")

@@ -1,0 +1,798 @@
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PCEP PYTHON SURVIVAL WALL - Andy's Edition v2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00c8ff;
+            --pink: #ff2f92;
+            --green: #00d84a;
+            --yellow: #ffb800;
+            --purple: #9b5cff;
+            --black: #151515;
+            --gray: #444444;
+            --light-bg: #f8f9fa;
+            --paper: #ffffff;
+            --trap-bg: #fff0f3;
+            --trap-border: #ff003c;
+            --mnemonic-bg: #fffbe6;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        @page {
+            size: A3 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            body { 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                background: var(--paper); 
+            }
+            .page { 
+                margin: 6mm 8mm 12mm 8mm !important; 
+                box-shadow: none !important; 
+                page-break-after: always; 
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 8.2pt;
+            line-height: 1.3;
+            color: var(--black);
+            margin: 0;
+            padding: 0;
+            background-color: #e5e5e5;
+        }
+
+        .page {
+            background: var(--paper);
+            width: 420mm;
+            height: 297mm;
+            margin: 0 auto;
+            padding: 8mm 10mm;
+            position: relative;
+            page-break-after: always;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            border-bottom: 4px solid var(--black);
+        }
+
+        .header-title {
+            font-family: 'Audiowide', sans-serif;
+            font-size: 22pt;
+            letter-spacing: 1px;
+            color: var(--black);
+            padding-bottom: 2px;
+            text-align: left;
+        }
+
+        .header-edition {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 13pt;
+            text-align: right;
+            color: var(--pink);
+            padding-bottom: 2px;
+            letter-spacing: 2px;
+        }
+
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .grid-col {
+            padding: 0 8px;
+            vertical-align: top;
+            width: 33.333%;
+        }
+
+        .grid-col:first-child { padding-left: 0; }
+        .grid-col:last-child { padding-right: 0; }
+
+        .panel {
+            background: var(--paper);
+            border: 2px solid var(--black);
+            margin-bottom: 10px;
+            position: relative;
+            box-shadow: 4px 4px 0px var(--black);
+        }
+
+        .panel.cyan { border-top: 6px solid var(--cyan); }
+        .panel.pink { border-top: 5px solid var(--pink); }
+        .panel.green { border-top: 5px solid var(--green); }
+        .panel.yellow { border-top: 5px solid var(--yellow); }
+        .panel.purple { border-top: 5px solid var(--purple); }
+
+        .panel h2 {
+            background: var(--black);
+            color: var(--paper);
+            margin: 0;
+            padding: 4px 8px;
+            font-size: 10pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .panel-content { padding: 8px; }
+
+        pre {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 7.5pt;
+            font-weight: 700;
+            background-color: var(--black) !important;
+            color: #f8f8f2;
+            padding: 6px;
+            margin: 4px 0;
+            border: 1px solid var(--black);
+            white-space: pre-wrap;
+            line-height: 1.25;
+        }
+
+        code {
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 700;
+            background-color: var(--black);
+            color: var(--cyan);
+            padding: 1px 3px;
+            font-size: 7.8pt;
+            border-radius: 2px;
+        }
+
+        .c-pink { color: var(--pink) !important; }
+        .c-green { color: var(--green) !important; }
+        .c-yellow { color: var(--yellow) !important; }
+        .c-cyan { color: var(--cyan) !important; }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 4px 0;
+            font-size: 7.8pt;
+        }
+
+        .matrix-table th {
+            background-color: var(--black);
+            color: var(--paper);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-align: left;
+            padding: 4px 5px;
+            border: 1px solid var(--black);
+            text-transform: uppercase;
+            font-size: 7.2pt;
+        }
+
+        .matrix-table td {
+            padding: 4px 5px;
+            border: 1px solid #dddddd;
+            vertical-align: top;
+        }
+
+        .matrix-table tr:nth-child(even) { background-color: var(--light-bg); }
+
+        .trap-box {
+            background-color: var(--trap-bg);
+            border: 1px dashed var(--trap-border);
+            border-left: 6px solid var(--trap-border);
+            padding: 5px 8px;
+            margin: 6px 0;
+        }
+
+        .trap-box b {
+            color: var(--trap-border);
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8pt;
+            display: block;
+            margin-bottom: 1px;
+        }
+
+        .mnemonic-box {
+            background-color: var(--mnemonic-bg);
+            border: 1px dashed var(--yellow);
+            border-left: 6px solid var(--yellow);
+            padding: 5px 8px;
+            margin: 6px 0;
+        }
+
+        .mnemonic-box b {
+            color: #b58100;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8pt;
+            display: block;
+            margin-bottom: 1px;
+        }
+
+        .black-panel {
+            background: var(--black);
+            color: var(--paper);
+            border: 2px solid var(--black);
+            margin-bottom: 10px;
+            box-shadow: 4px 4px 0px var(--pink);
+        }
+        
+        .black-panel h2 {
+            background: var(--pink);
+            color: var(--black);
+            margin: 0;
+            padding: 6px 8px;
+            font-size: 11pt;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .black-panel ul { margin: 6px 0; padding-left: 16px; }
+        .black-panel li { margin-bottom: 5px; font-size: 8pt; line-height: 1.3; }
+        .black-panel li b { color: var(--cyan); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+
+        .math-expr {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-weight: bold;
+            color: var(--purple);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <table class="header-table">
+            <tr>
+                <td class="header-title">PCEP SURVIVAL WALL</td>
+                <td class="header-edition">ANDY'S EDITION V2.0</td>
+            </tr>
+        </table>
+
+        <table class="grid-table">
+            <tr>
+                <td class="grid-col">
+                    <div class="panel cyan">
+                        <h2>1. Python Object Hierarchy</h2>
+                        <div class="panel-content">
+                            <pre><span class="c-yellow">VALUE TYPES</span>
+├── <span class="c-cyan">IMMUTABLE (Cannot change value in-place)</span>
+│   ├── int    ──&gt; 42, -5, 0o12 (Octal), 0x2A (Hex)
+│   ├── float  ──&gt; 3.14, -0.0, 2e3 (= 2000.0)
+│   ├── bool   ──&gt; <span class="c-pink">True</span>, <span class="c-pink">False</span> [<span class="c-pink">True == 1, False == 0</span>]
+│   ├── str    ──&gt; "Andy", 'PCEP', \"\"\"Multi-line\"\"\"
+│   └── tuple  ──&gt; (1, 2), (5,) [<span class="c-pink">🚨 Needs trailing comma!</span>]
+└── <span class="c-green">MUTABLE (Can change value in-place)</span>
+    ├── list   ──&gt; [1, 2, 3], ['x', 'y']
+    ├── dict   ──&gt; {"key": "value"}, {1: "one"}
+    └── set    ──&gt; {1, 2, 3}
+└── <span class="c-purple">SPECIAL</span>
+    └── None   ──&gt; <span class="c-pink">None</span> (Absence of value)</pre>
+                            <div class="trap-box">
+                                <b>🚨 Exam Data Type Disguises</b>
+                                Literals containing a dot or exponent are always <code class="c-pink">floats</code> (e.g. <code class="c-pink">1.</code> or <code class="c-pink">2e0</code> are floats, not ints). Modifying an immutable tuple item directly via index (<code class="c-cyan">t[0] = 1</code>) causes a <code class="c-pink">TypeError</code>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel pink">
+                        <h2>2. Variable / Value Assignment Decoder</h2>
+                        <div class="panel-content">
+                            <div style="text-align:center; font-weight:bold; padding:4px; background:var(--black); color:var(--green); font-family:'JetBrains Mono'; margin-bottom:4px; font-size:8pt;">x = 42</div>
+                            <table class="matrix-table">
+                                <thead>
+                                    <tr>
+                                        <th>Token</th>
+                                        <th>PCEP Term</th>
+                                        <th>Exam Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code class="c-green">x</code></td>
+                                        <td><b>Variable</b></td>
+                                        <td>Name assigned to a value object.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code class="c-pink">=</code></td>
+                                        <td><b>Assignment</b></td>
+                                        <td>Binds name on the left to value on the right.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code class="c-cyan">42</code></td>
+                                        <td><b>Value</b></td>
+                                        <td>The concrete data payload held in memory.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="trap-box">
+                                <b>💥 Variable ≠ Value</b>
+                                Changing a variable (<code class="c-green">x = 20</code>) does not change the initial value object (<code class="c-cyan">42</code>); it just reassigns the name label to point somewhere else.
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>3. Function Anatomy Decoder</h2>
+                        <div class="panel-content">
+                            <pre>[ DEFINITION SIGNATURE ]
+ <span class="c-pink">def</span>   <span class="c-cyan">add</span> ( a , b ) :
+  │     │   └───┬───┘
+  │     │       └─ <span class="c-yellow">PARAMETERS</span> (Placeholders inside signature)
+  │     └─ FUNCTION NAME (Identifier)
+  └─ KEYWORD (Starts block definition)
+
+     <span class="c-pink">return</span>   a + b
+       │       ──┬──
+       │         └─ EXPRESSION (Evaluates to a value)
+       └─ KEYWORD (Exits function, sends value back)
+
+[ CALL & ASSIGNMENT ]
+ result   =   <span class="c-cyan">add</span> ( 2 , 3 )
+   │      │    │    ──┬──
+   │      │    │      └─ <span class="c-yellow">ARGUMENTS</span> (Actual values passed to call)
+   │      │    └─ FUNCTION CALL
+   │      └─ ASSIGNMENT OPERATOR
+   └─ VARIABLE (Receives return value)</pre>
+                            <div class="mnemonic-box">
+                                <b>🔄 Visual Call Flow Trace</b>
+                                1. Code hits: <code class="c-green">result = add(2, 3)</code><br>
+                                2. Arguments map to parameters &rarr; <code class="c-yellow">a=2, b=3</code>.<br>
+                                3. Expression runs: <code class="c-cyan">2 + 3</code> evaluates to <code class="c-cyan">5</code>.<br>
+                                4. <code class="c-pink">return 5</code> stops function execution and sends <code class="c-cyan">5</code> back.<br>
+                                5. Variable <code class="c-green">result</code> is assigned the integer value <code class="c-cyan">5</code>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel yellow">
+                        <h2>4. Parameter vs Argument</h2>
+                        <div class="panel-content">
+                            <pre> DEFINITION BLOCK         EXECUTION CALL
+ <span class="c-pink">def</span> greet(<span class="c-yellow">name</span>):          greet(<span class="c-cyan">"Andy"</span>)
+             │                     │
+             ▼                     ▼
+       [ <span class="c-yellow">PARAMETER</span> ]         [ <span class="c-cyan">ARGUMENT</span> ]
+         Placeholder           Actual Value</pre>
+                            <div class="mnemonic-box" style="margin:4px 0; padding:4px;">
+                                <b>💡 Mnemonic:</b> PARAMETER = PLACEHOLDER &bull; ARGUMENT = ACTUAL VALUE
+                            </div>
+                            <p style="margin:4px 0; font-size:7.5pt; line-height:1.2;">
+                            • <b>Positional:</b> Mapped strictly by relative order. <code class="c-cyan">f(2, 3)</code> &rarr; <code class="c-yellow">a=2, b=3</code>.<br>
+                            • <b>Keyword:</b> Assigned explicitly by name. <code class="c-cyan">f(b=3, a=2)</code> overrides order safely.
+                            </p>
+                            <div class="trap-box" style="margin:4px 0;">
+                                <b>🔥 Positional Follows Keyword Rule</b>
+                                <b>Positional arguments MUST ALWAYS precede keyword arguments inside any call statement!</b><br>
+                                <code class="c-pink">print("Hi", end="", "World")</code> &rarr; ❌ <code class="c-pink">SyntaxError: positional argument follows keyword argument</code>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>5. String Methods Survival Box</h2>
+                        <div class="panel-content">
+                            <table class="matrix-table" style="margin:0;">
+                                <thead>
+                                    <tr>
+                                        <th>Method Syntax</th>
+                                        <th>Output Value</th>
+                                        <th>Exam Trap / Behavior</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code class="c-cyan">"hi".upper()</code></td>
+                                        <td><code class="c-green">"HI"</code></td>
+                                        <td>Strings are immutable; methods return a <i>new</i> string string. Original stays lowercase.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code class="c-cyan">"HI".lower()</code></td>
+                                        <td><code class="c-green">"hi"</code></td>
+                                        <td>Converts all casing characters to lowercase.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code class="c-cyan">"txt".replace("t","x")</td>
+                                        <td><code class="c-green">"xxxl"</code></td>
+                                        <td>Replaces all occurrences of the substring character.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code class="c-cyan">"banana".find("an")</code></td>
+                                        <td><code class="c-green">1</code></td>
+                                        <td>Returns <b>lowest starting index</b>. Returns <code class="c-pink">-1</code> if substring is missing!</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code class="c-cyan">"a,b".split(",")</code></td>
+                                        <td><code class="c-green">['a', 'b']</code></td>
+                                        <td>Splits string into a <b>list of strings</b> at delimiter points.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code class="c-cyan">"-".join(['a', 'b'])</code></td>
+                                        <td><code class="c-green">"a-b"</code></td>
+                                        <td>Joins list elements into string using separator. Fails if items are not strings!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel cyan">
+                        <h2>6. Truthy vs Falsy Sector</h2>
+                        <div class="panel-content">
+                            <div style="background:var(--black); color:var(--paper); padding:4px; font-weight:bold; font-size:7.5pt; text-transform:uppercase; font-family:'Orbitron';">
+                                Strictly Falsy Values Checklist:
+                            </div>
+                            <div style="font-family:'JetBrains Mono'; background:var(--light-bg); border:1px solid #ddd; padding:4px; font-size:7.5pt; line-height:1.3;">
+                                • <span class="c-pink">False</span> &bull; <span class="c-pink">None</span><br>
+                                • <span class="c-pink">0</span> (int) &bull; <span class="c-pink">0.0</span> (float)<br>
+                                • <span class="c-pink">""</span> (empty string) &bull; <span class="c-pink">[]</span> (empty list)<br>
+                                • <span class="c-pink">{}</span> (empty dict) &bull; <span class="c-pink">set()</span> (empty set)
+                            </div>
+                            <div class="mnemonic-box" style="margin-top:4px;">
+                                <b>💡 Rule: Everything else is True!</b>
+                                Non-empty string literals evaluate to True regardless of text content value.<br>
+                                <code class="c-cyan">bool("False")</code> &rarr; <code class="c-green">True</code> &bull; <code class="c-cyan">bool("0")</code> &rarr; <code class="c-green">True</code>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="panel" style="border-top: 5px solid var(--black); margin-bottom:0;">
+            <h2>7. Core Scopes & PCEP Terminology Matrix</h2>
+            <div class="panel-content" style="padding:4px 6px;">
+                <table class="matrix-table" style="margin:0; font-size:7.5pt;">
+                    <tr>
+                        <td><b>Global Scope:</b> Variables defined outside functions. Visible everywhere inside file.</td>
+                        <td><b>Local Scope:</b> Variables defined inside a function block. Visible only within that function execution context.</td>
+                        <td><b>Shadowing:</b> Variable assigned inside function automatically becomes local, masking global variables. Global stays 10: <code class="c-pink">x=10; def f(): x=5</code></td>
+                        <td><b>Keyword:</b> Reserved word token with a fixed syntactical purpose (<code class="c-pink">def</code>, <code class="c-pink">while</code>, etc.). Can never be variable identifiers!</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <table class="header-table">
+            <tr>
+                <td class="header-title">PCEP SURVIVAL WALL</td>
+                <td class="header-edition">ANDY'S EDITION V2.0</td>
+            </tr>
+        </table>
+
+        <table class="grid-table">
+            <tr>
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>1. Loops Dedicated Review</h2>
+                        <div class="panel-content">
+                            <p style="margin:0 0 2px 0; font-weight:bold;">A. FOR LOOP (Loops through a sequence)</p>
+                            <pre><span class="c-pink">for</span> x <span class="c-pink">in</span> <span class="c-cyan">range(3)</span>:
+    <span class="c-green">print(x)</span></pre>
+                            <div class="mnemonic-box" style="margin:4px 0; padding:4px;">
+                                <b>Translation:</b> FOR EACH VALUE IN A SEQUENCE &rarr; DO SOMETHING.
+                            </div>
+                            
+                            <p style="margin:6px 0 2px 0; font-weight:bold;">B. WHILE LOOP (Repeats based on condition)</p>
+                            <pre><span class="c-pink">while</span> x &lt; 3:
+    x += 1</pre>
+                            <div class="mnemonic-box" style="margin:4px 0; padding:4px;">
+                                <b>Translation:</b> REPEAT AS LONG AS CONDITION IS TRUE.
+                            </div>
+                            
+                            <p style="margin:6px 0 2px 0; font-weight:bold;">C. Loop Control Commands</p>
+                            <div style="font-size:7.5pt; line-height:1.25; background:var(--black); padding:4px; border-radius:2px; font-family:'JetBrains Mono';">
+                                • <span class="c-pink">break</span> &rarr; Exits the loop completely and immediately.<br>
+                                • <span class="c-cyan">continue</span> &rarr; Skips remaining code inside current iteration.<br>
+                                • <span class="c-yellow">pass</span> &rarr; Null placeholder instruction. Does absolutely nothing.
+                            </div>
+                            
+                            <div class="trap-box" style="margin:4px 0;">
+                                <b>🚨 Infinite Loop & Update Traps</b>
+                                • Loops hang forever if conditional parameters never evaluate to False.<br>
+                                • **Exam Trap:** Forgetting to update counter variables (<code class="c-cyan">x += 1</code>) creates infinite runs.<br>
+                                • **Exam Trap:** <code class="c-cyan">continue</code> immediately skips the rest of the current loop layer code block.
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td class="grid-col">
+                    <div class="panel yellow">
+                        <h2>2. range() Exploration Terminal</h2>
+                        <div class="panel-content">
+                            <div style="background:#151515; color:#fff; text-align:center; padding:4px; font-family:'Orbitron', sans-serif; font-size:8pt; font-weight:bold; margin-bottom:4px; letter-spacing:1px;">
+                                MANTRA: START INCLUDED ── STOP EXCLUDED
+                            </div>
+                            <pre><span class="c-cyan">range(stop)</span>             ──&gt; Starts at 0, steps 1.
+<span class="c-cyan">range(start, stop)</span>      ──&gt; Explicit start, steps 1.
+<span class="c-cyan">range(start, stop, step)</span>──&gt; Moves by step factor.</pre>
+                            
+                            <table class="matrix-table" style="margin-top:4px;">
+                                <thead>
+                                    <tr>
+                                        <th>Syntax Example</th>
+                                        <th>Generated Sequence Values</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><code class="c-cyan">range(5)</code></td><td><code class="c-green">0, 1, 2, 3, 4</code></td></tr>
+                                    <tr><td><code class="c-cyan">range(1, 5)</code></td><td><code class="c-green">1, 2, 3, 4</code></td></tr>
+                                    <tr><td><code class="c-cyan">range(2, 13, 3)</code></td><td><code class="c-green">2, 5, 8, 11</code></td></tr>
+                                    <tr><td><code class="c-cyan">range(1, 2)</code></td><td><code class="c-green">1</code></td></tr>
+                                    <tr><td><code class="c-cyan">range(5, 1, -1)</code></td><td><code class="c-green">5, 4, 3, 2</code> (Counts down backward)</td></tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="trap-box" style="margin-top:6px;">
+                                <b>🚨 THE ABSOLUTE STOP VAL BOUNDARY RULE</b>
+                                <b>THE STOP VALUE NEVER APPEARS IN THE OUTPUT SEQUENCE.</b><br>
+                                <code class="c-cyan">range(1, 5)</code> will generate up to 4. It never yields 5. If increments are impossible (<code class="c-cyan">range(1, 5, -1)</code>), it yields an empty loop without throwing errors.
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>3. Data Structures Comparison Matrix</h2>
+                        <div class="panel-content">
+                            <table class="matrix-table" style="margin:0;">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Syntax</th>
+                                        <th>Ordered</th>
+                                        <th>Mutable</th>
+                                        <th>Duplicates</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><b>list</b></td>
+                                        <td><code class="c-green">[1, 2]</code></td>
+                                        <td style="color:green; font-weight:bold;">YES</td>
+                                        <td style="color:green; font-weight:bold;">YES</td>
+                                        <td style="color:green; font-weight:bold;">YES</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>tuple</b></td>
+                                        <td><code class="c-pink">(1, 2)</code></td>
+                                        <td style="color:green; font-weight:bold;">YES</td>
+                                        <td style="color:red; font-weight:bold;">NO</td>
+                                        <td style="color:green; font-weight:bold;">YES</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>dict</b></td>
+                                        <td><code class="c-yellow">{"k":v}</code></td>
+                                        <td style="color:red; font-weight:bold;">NO</td>
+                                        <td style="color:green; font-weight:bold;">YES</td>
+                                        <td>Keys: NO</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>set</b></td>
+                                        <td><code class="c-cyan">{1, 2}</code></td>
+                                        <td style="color:red; font-weight:bold;">NO</td>
+                                        <td style="color:green; font-weight:bold;">YES</td>
+                                        <td style="color:red; font-weight:bold;">NO</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <p style="margin:4px 0 2px 0; font-weight:bold; font-size:7.5pt;">Common List Manipulation Methods:</p>
+                            <div style="font-size:7.5pt; line-height:1.3; background:var(--black); padding:4px; border-radius:2px; font-family:'JetBrains Mono'; margin-bottom:4px;">
+                                • <span class="c-cyan">.append(x)</span> &rarr; Adds item to the very end of list.<br>
+                                • <span class="c-cyan">.insert(i, x)</span> &rarr; Adds item at specific index position.<br>
+                                • <span class="c-cyan">.remove(x)</span> &rarr; Removes first matching value. Throws error if missing!<br>
+                                • <span class="c-cyan">.pop(i)</span> &rarr; Removes and returns item at index (defaults to end).
+                            </div>
+                            
+                            <div class="trap-box" style="margin:0; padding:4px 8px;">
+                                <b>🚨 Empty Structures & Single Item Traps</b>
+                                • <code class="c-pink">{}</code> creates an empty <b>dictionary</b>, NOT a set!<br>
+                                • <code class="c-cyan">set()</code> is required to instantiate an empty set.<br>
+                                • <code class="c-pink">(5)</code> evaluates as plain integer. Single item tuples require trailing commas: <code class="c-pink">(5,)</code>.
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="panel pink" style="margin-bottom:0; margin-top:2px;">
+            <h2>4. Sequence Slicing & Built-In Helper Checklist</h2>
+            <div class="panel-content" style="padding:4px 6px;">
+                <table class="matrix-table" style="margin:0; font-size:7.5pt;">
+                    <tr>
+                        <td><b>Slicing Axiom:</b> <code class="c-cyan">seq[start:stop:step]</code> &rarr; Start included, stop excluded. <code class="c-cyan">"PCEP"[1:3]</code> yields <code class="c-green">"CE"</code>. Indexing starts at 0.</td>
+                        <td><b>Tolerance:</b> Out-of-bounds slices clip cleanly instead of throwing error crashes: <code class="c-cyan">[1, 2][0:99]</code> safely returns <code class="c-green">[1, 2]</code>.</td>
+                        <td><b>Core Helpers:</b> <code class="c-pink">len()</code> returns element count. <code class="c-pink">type()</code> checks type classes. <code class="c-pink">print()</code> outputs strings but returns <code class="c-yellow">None</code>!</td>
+                        <td><b>User Input:</b> <code class="c-pink">input()</code> always captures keyboard data streams as a <code class="c-cyan">str</code> string, requiring manual numeric conversions.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <table class="header-table">
+            <tr>
+                <td class="header-title">PCEP SURVIVAL WALL</td>
+                <td class="header-edition">ANDY'S EDITION V2.0</td>
+            </tr>
+        </table>
+
+        <table class="grid-table">
+            <tr>
+                <td class="grid-col">
+                    <div class="panel pink">
+                        <h2>1. Precedence Ladder & Identity</h2>
+                        <div class="panel-content">
+                            <table class="matrix-table" style="margin:0; font-size:7.5pt;">
+                                <tr style="background:#ffcccc; font-weight:bold;"><td style="width:18%;">1 (HIGH)</td><td><code>( )</code></td><td>Parentheses override everything.</td></tr>
+                                <tr><td>2</td><td><code>**</code></td><td>🚨 Power runs <b>Right-to-Left</b>: <span class="math-expr">2**3**2 = 2**(3**2) = 512</span>.</td></tr>
+                                <tr style="background:#fff3cd;"><td>3</td><td><code>+x, -x</code></td><td>Unary signs. Right of power wins: <span class="math-expr">2**-2 = 0.25</span>.</td></tr>
+                                <tr><td>4</td><td><code>*, /, //, %</code></td><td>Multiplicative math. Evaluates Left-to-Right.</td></tr>
+                                <tr><td>5</td><td><code>+, -</code></td><td>Additive math layers (Binary plus and minus).</td></tr>
+                                <tr><td>6</td><td><code>&lt;&lt;, &gt;&gt;</code></td><td>Bitwise Logical Left/Right Shifts.</td></tr>
+                                <tr><td>7</td><td><code>&amp; &rarr; ^ &rarr; |</code></td><td>Bitwise operations hierarchy ordering (AND &rarr; XOR &rarr; OR).</td></tr>
+                                <tr><td>8</td><td><code>==, is, in</code></td><td>Equality value match, Identity match, Membership match.</td></tr>
+                                <tr style="background:#e2e3e5;"><td>9 (LOW)</td><td><code>not &rarr; and &rarr; or</code></td><td>Logical boolean layer evaluation stack order (NOT &rarr; AND &rarr; OR).</td></tr>
+                            </table>
+                            
+                            <p style="margin:4px 0 2px 0; font-weight:bold; font-size:7.5pt;">Practical Priority Examples:</p>
+                            <div style="font-size:7.5pt; line-height:1.25; background:var(--black); padding:4px; border-radius:2px; font-family:'JetBrains Mono'; margin-bottom:4px;">
+                                • <span class="c-cyan">3 &lt;&lt; 2 | 1</span> &rarr; Shifts first (<span class="math-expr">3 &times; 4 = 12</span>), then runs bitwise OR (<span class="math-expr">12 | 1</span>) &rarr; <b class="c-green">13</b>.<br>
+                                • <span class="c-cyan">2 + 3 * 4</span> &rarr; Multiplies first (<span class="math-expr">3 &times; 4 = 12</span>), then adds 2 &rarr; <b class="c-green">14</b>.
+                            </div>
+                            
+                            <div class="trap-box" style="margin:4px 0 0 0; padding:4px 8px;">
+                                <b>🚨 Identity vs Parity Equality</b>
+                                • <code class="c-pink">==</code> checks if values are equal. &bull; <code class="c-pink">is</code> checks strict unique address identities.<br>
+                                • <code class="c-cyan">in</code> / <code class="c-cyan">not in</code> evaluate membership existence inside sequence iterables.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel cyan" style="margin-top:6px;">
+                        <h2>2. Common PCEP Question Decoder</h2>
+                        <div class="panel-content" style="padding:4px;">
+                            <table class="matrix-table" style="margin:0; font-size:7.5pt;">
+                                <tr style="background:#eee; font-weight:bold;"><td>When you see...</td><td>What is the exam testing?</td></tr>
+                                <tr><td><code class="c-pink">def</code> / <code class="c-pink">return</code></td><td>Function declaration parameters and immediately exiting value loops.</td></tr>
+                                <tr><td><code class="c-cyan">range(x, y)</code></td><td>Loop constraints boundary loops. Target <code class="c-pink">y</code> is excluded!</td></tr>
+                                <li><b>list vs tuple</b></td><td>Mutability differences. Modifying tuple indexes throws errors.</td></tr>
+                                <tr><td><code class="c-pink">is</code> vs <code class="c-green">==</code></td><td>Address location identity vs simple content value matching.</td></tr>
+                                <tr><td><code class="c-pink">try</code> / <code class="c-pink">except</code></td><td>Catching runtime issues safely before scripts crash out.</td></tr>
+                                <tr><td><code class="c-pink">&lt;&lt;</code> / <code class="c-pink">&gt;&gt;</code></td><td>Fast binary bit manipulation operations (multiplication/floor division).</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+
+                <td class="grid-col">
+                    <div class="panel yellow">
+                        <h2>3. Bitwise Survival Matrix (4-Bit Pilot)</h2>
+                        <div class="panel-content">
+                            <table class="matrix-table" style="font-family:'JetBrains Mono', monospace; font-size:6.8pt; margin:0 0 4px 0;">
+                                <tr style="background:var(--black); color:var(--green); font-weight:bold;">
+                                    <td>Dec</td><td>8</td><td>4</td><td>2</td><td>1</td><td>Binary</td>
+                                    <td>Dec</td><td>8</td><td>4</td><td>2</td><td>1</td><td>Binary</td>
+                                </tr>
+                                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0b0000</td><td>8</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0b1000</td></tr>
+                                <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0b0001</td><td>9</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0b1001</td></tr>
+                                <tr><td>2</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0b0010</td><td>10</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0b1010</td></tr>
+                                <tr><td>3</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0b0011</td><td>11</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0b1011</td></tr>
+                                <tr><td>4</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0b0100</td><td>12</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0b1100</td></tr>
+                                <tr><td>5</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0b0101</td><td>13</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0b1101</td></tr>
+                                <tr><td>6</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0b0110</td><td>14</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0b1110</td></tr>
+                                <tr><td>7</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0b0111</td><td>15</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0b1111</td></tr>
+                            </table>
+                            <div style="font-size:7.5pt; line-height:1.25;">
+                                • <b><code class="c-green">&amp;</code> = COMMON BITS:</b> 1 only if BOTH bits are 1. <code class="c-cyan">10 &amp; 12</code> &rarr; <b class="c-green">8</b>.<br>
+                                • <b><code class="c-green">|</code> = ALL BITS:</b> 1 if at least one side is 1. <code class="c-cyan">10 | 12</code> &rarr; <b class="c-green">14</b>.<br>
+                                • <b><code class="c-green">^</code> = DIFFERENT BITS ONLY:</b> 1 if bit states differ. <code class="c-cyan">10 ^ 12</code> &rarr; <b class="c-green">6</b>.<br>
+                                • <b><code class="c-pink">&lt;&lt;</code> Left Shift:</b> Multiply left side by <span class="math-expr">2<sup>right</sup></span>. <code class="c-cyan">2 &lt;&lt; 3</code> &rarr; <span class="math-expr">2 &times; 8</span> = <b class="c-green">16</b>.<br>
+                                • <b><code class="c-pink">&gt;&gt;</code> Right Shift:</b> Floor divide left side by <span class="math-expr">2<sup>right</sup></span>. <code class="c-cyan">11 &gt;&gt; 2</code> &rarr; <span class="math-expr">11 // 4</span> = <b class="c-green">2</b>.
+                            </div>
+                            <div class="trap-box" style="margin:4px 0 0 0; padding:4px;">
+                                <b>🚨 Unary Operator Asterisk Reject</b>
+                                Multiplication symbols (<code class="c-pink">*</code>) are strictly binary. Running <code class="c-pink">print(*5)</code> triggers a fatal syntax block crash!
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>4. Exception Architecture Decoder</h2>
+                        <div class="panel-content">
+                            <pre style="margin:0 0 4px 0;"><span class="c-pink">try:</span>
+    # Code execution lines run path here.
+<span class="c-pink">except</span> <span class="c-yellow">ArithmeticError</span>:
+    # Catches parent groups and subclass children!
+<span class="c-pink">except</span> <span class="c-yellow">ZeroDivisionError</span>:
+    # 🚨 This line is dead block if placed below parent!
+<span class="c-pink">finally:</span>
+    # Guaranteed line execution regardless of errors.</pre>
+                        </div>
+                    </div>
+
+                    <div class="panel purple" style="margin-top:2px;">
+                        <h2>5. High-Frequency Core 6 Errors</h2>
+                        <div class="panel-content" style="padding:2px 6px;">
+                            <table class="matrix-table" style="margin:0; font-size:7.2pt; line-height:1.2;">
+                                <thead>
+                                    <tr>
+                                        <th>Error Name</th>
+                                        <th>Common Cause / Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><b class="c-pink">NameError</b></td><td>Using variable before definition. <code class="c-cyan">print(undef)</code></td></tr>
+                                    <tr><td><b class="c-pink">ValueError</b></td><td>Right type, wrong internal value context. <code class="c-cyan">int("xyz")</code></td></tr>
+                                    <tr><td><b class="c-pink">TypeError</b></td><td>Operation applied to incompatible types. <code class="c-cyan">len(42)</code></td></tr>
+                                    <tr><td><b class="c-pink">IndexError</b></td><td>Sequence array lookup index out of bounds. <code class="c-cyan">[1][9]</code></td></tr>
+                                    <tr><td><b class="c-pink">KeyError</b></td><td>Target key lookup missing from dictionary. <code class="c-cyan">{}["k"]</code></td></tr>
+                                    <tr><td><b class="c-pink">ZeroDivisionError</b></td><td>Dividing evaluation by zero or zero floats. <code class="c-cyan">1 / 0.0</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="black-panel" style="margin-top:2px; margin-bottom:0;">
+            <h2>🚨 The Ultimate Exam Room Traps Checklist (Review Right Before Entering!)</h2>
+            <div class="panel-content" style="padding:4px 8px;">
+                <table style="width:100%; border-collapse:collapse; font-size:7.8pt; color:var(--paper); line-height:1.25;">
+                    <tr>
+                        <td style="width:33%; vertical-align:top; padding-right:10px;">
+                            • <b>Identifier vs Value:</b> Changing label bindings via assignment does not mutate old data inside memory structures.<br>
+                            • <b>Parameter vs Argument:</b> Parameters act as labels inside definitions; arguments provide raw value inputs inside call blocks.<br>
+                            • <b>Print vs Return:</b> <code class="c-cyan">print()</code> shows visual outputs but evaluates to <code class="c-pink">None</code>. Only <code class="c-cyan">return</code> chains active object payloads out.
+                        </td>
+                        <td style="width:33%; vertical-align:top; padding-right:10px;">
+                            • <b>Finite range() Exclusions:</b> <code class="c-cyan">range(5)</code> yields 0,1,2,3,4. The stop value 5 is never generated or accessed.<br>
+                            • <b>Float-String roadblocks:</b> Running <code class="c-cyan">int("5.5")</code> breaks with a ValueError. Change down sequentially: <code class="c-cyan">int(float("5.5"))</code>.<br>
+                            • <b>Missing Tuple Comma:</b> Coding <code class="c-cyan">x = (5)</code> instantiates an integer. Single items require trailing commas: <code class="c-cyan">x = (5,)</code>.
+                        </td>
+                        <td style="width:33%; vertical-align:top;">
+                            • <b>Case Sensitivities:</b> Tokens like <code class="c-cyan">true</code> or <code class="c-cyan">none</code> are valid variable labels. Only <code class="c-pink">True</code>, <code class="c-pink">False</code>, and <code class="c-pink">None</code> are keywords.<br>
+                            • <b>Default Parameter Constraints:</b> Preset positional parameters (<code class="c-cyan">def f(a, b=2):</code>) must sit strictly behind raw variable placeholders.<br>
+                            • <b>Bitwise vs Logical:</b> <code class="c-cyan">and</code>/<code class="c-cyan">or</code> short-circuit boolean valuations. <code class="c-cyan">&amp;</code>/<code class="c-cyan">|</code> evaluate individual bits step-by-step.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+"""
+
+with open("pcep_python_survival_wall_v2.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+HTML("pcep_python_survival_wall_v2.html").write_pdf("pcep_python_survival_wall_v2.pdf")
+print("V2.0 COMPILATION REVENUE SUCCESSFUL.")

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GIT & GITHUB SURVIVAL WALL - Andy's Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --cyan: #00c8ff;
+        --pink: #ff2f92;
+        --green: #00d84a;
+        --yellow: #ffb800;
+        --orange: #ff6b35;
+        --purple: #9b5cff;
+        --black: #151515;
+        --gray: #444444;
+        --light: #f4f4f4;
+        --paper: #ffffff;
+        --danger: #ff003c;
+    }
+    
+    @page {
+        size: A3 landscape;
+        margin: 0;
+    }
+    
+    @media print {
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--paper); }
+        .page { margin: 0 !important; box-shadow: none !important; }
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #222;
+        color: var(--black);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 7.5pt;
+        line-height: 1.3;
+    }
+
+    .page {
+        width: 420mm;
+        height: 297mm;
+        background: var(--paper);
+        margin: 10mm auto;
+        padding: 10mm;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        gap: 2mm;
+        overflow: hidden;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; margin: 0 0 1mm 0; font-weight: 700; }
+    h1 { font-size: 22pt; letter-spacing: 2px; color: var(--black); border-bottom: 4px solid var(--black); padding-bottom: 1.5mm; display: flex; justify-content: space-between; align-items: flex-end; }
+    h1 span { color: var(--cyan); font-family: 'Audiowide', sans-serif; font-size: 14pt; }
+    .subtitle { font-family: 'JetBrains Mono'; font-size: 8pt; font-weight: 700; color: var(--gray); text-transform: none; letter-spacing: 0; margin-top: 1mm; }
+    
+    h2 { font-size: 10pt; background: var(--black); color: var(--paper); padding: 1mm 3mm; display: inline-block; clip-path: polygon(0 0, 100% 0, 97% 100%, 0% 100%); margin-bottom: 1.5mm; }
+    
+    /* Layouts */
+    .grid-col-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3.5mm; flex: 1; }
+    
+    /* Panels */
+    .panel {
+        background: var(--paper);
+        border: 2px solid var(--black);
+        padding: 2.5mm;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 3.5mm;
+    }
+    .panel::after { content: ''; position: absolute; top: 3px; left: 3px; right: -7px; bottom: -7px; z-index: -1; }
+
+    /* Neon Accents */
+    .border-cyan { border-top: 4px solid var(--cyan); }
+    .border-cyan::after { background: var(--cyan); }
+    .border-pink { border-top: 4px solid var(--pink); }
+    .border-pink::after { background: var(--pink); }
+    .border-green { border-top: 4px solid var(--green); }
+    .border-green::after { background: var(--green); }
+    .border-yellow { border-top: 4px solid var(--yellow); }
+    .border-yellow::after { background: var(--yellow); }
+    .border-orange { border-top: 4px solid var(--orange); }
+    .border-orange::after { background: var(--orange); }
+    .border-purple { border-top: 4px solid var(--purple); }
+    .border-purple::after { background: var(--purple); }
+    .border-danger { border-top: 4px solid var(--danger); border-color: var(--danger); }
+    .border-danger::after { background: var(--danger); }
+
+    /* Command Boxes */
+    .cmd-box { background: var(--light); border-left: 3px solid var(--black); padding: 1.5mm 2mm; margin-bottom: 1.5mm; }
+    .cmd-box.danger { border-left-color: var(--danger); background: #fff0f3; }
+    .cmd-name { font-weight: 800; font-size: 8pt; color: var(--black); margin-bottom: 1px; text-transform: uppercase; }
+    .cmd-code { font-family: 'JetBrains Mono', monospace; font-size: 7pt; color: var(--pink); background: var(--black); padding: 1px 3px; display: inline-block; margin-bottom: 1px; }
+    .cmd-desc { font-size: 7pt; color: var(--gray); margin-bottom: 1px; }
+    .cmd-use { font-size: 6.5pt; font-style: italic; color: var(--purple); }
+    .cmd-warn { font-size: 6.5pt; color: var(--danger); font-weight: bold; margin-top: 1px; }
+    
+    /* Flowchart / ASCII */
+    .ascii-art { font-family: 'JetBrains Mono', monospace; font-size: 7pt; background: var(--black); color: var(--green); padding: 2mm; border-radius: 2px; margin-bottom: 2mm; line-height: 1.3; white-space: pre; overflow-x: hidden; }
+    .ascii-hl { color: var(--pink); font-weight: bold; }
+    .ascii-cy { color: var(--cyan); font-weight: bold; }
+    .ascii-ye { color: var(--yellow); font-weight: bold; }
+    
+    /* Emergency Zone */
+    .emergency { background: var(--black); color: var(--paper); border: 3px solid var(--danger); padding: 3mm; box-shadow: 0 0 10px rgba(255,0,60,0.3); }
+    .emergency h3 { color: var(--danger); border-bottom: 1px solid var(--gray); margin-top: 0; padding-bottom: 1mm; font-size: 9pt; }
+    .emergency .cmd-box { background: #1a1a1a; border-left-color: var(--danger); margin-bottom: 1.5mm; padding: 1.5mm; }
+    .emergency .cmd-name { color: var(--paper); }
+    .emergency .cmd-code { color: var(--yellow); background: #333; }
+    
+    /* Conflict Box */
+    .conflict-box { font-family: 'JetBrains Mono', monospace; font-size: 7pt; background: var(--light); border: 1px solid var(--gray); padding: 2mm; margin-bottom: 2mm; }
+    .conf-head { color: var(--purple); font-weight: bold; }
+    .conf-mid { color: var(--danger); font-weight: bold; }
+    .conf-tail { color: var(--cyan); font-weight: bold; }
+    
+    /* Mantras */
+    .mantra-box { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 9pt; font-weight: bold; color: var(--black); margin: 1.5mm 0; padding: 2mm; border: 2px dashed var(--cyan); background: var(--paper); text-transform: uppercase; }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+    <div>
+        <h1>GIT & GITHUB SURVIVAL WALL <span>// Andy's Edition v1.0</span></h1>
+        <div class="subtitle">Version Control • Collaboration • Branching • Disaster Recovery</div>
+    </div>
+    
+    <div class="grid-col-4">
+        
+        <div>
+            <div class="panel border-yellow">
+                <h2>1. THE MENTAL MODEL</h2>
+                <p style="font-size: 6.5pt; margin: 0 0 1mm 0;">Git has 4 isolated zones. You must move files between them explicitly.</p>
+                
+                <div class="ascii-art">
+<span class="ascii-cy">WORKING DIR</span>   <span class="ascii-ye">STAGING</span>    <span class="ascii-hl">LOCAL REPO</span>
+(Your Folder) (The Bus)  (The Vault)
+     │            │           │
+     ├─<span class="ascii-cy">git add</span>───>│           │
+     │            │           │
+     │            ├─<span class="ascii-ye">commit</span>───>│
+     │            │           │
+     │<─<span class="ascii-hl">restore</span>───┤           │
+     │            │           │
+     │<─────<span class="ascii-hl">reset --hard</span>─────┤
+                </div>
+                <div style="font-size: 6.5pt; font-weight: bold; text-align: center; color: var(--purple);">+ REMOTE REPO (GitHub) via push/pull</div>
+            </div>
+
+            <div class="panel border-cyan">
+                <h2>2. START & CLONE</h2>
+                
+                <div class="cmd-box">
+                    <div class="cmd-name">git clone</div>
+                    <div class="cmd-code">git clone git@github.com:user/repo.git</div>
+                    <div class="cmd-desc">Downloads an existing remote repo to your machine.</div>
+                    <div class="cmd-use">Use when: Joining a project or copying from GitHub.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git init</div>
+                    <div class="cmd-code">git init</div>
+                    <div class="cmd-desc">Turns your current folder into a Git repository.</div>
+                    <div class="cmd-use">Use when: Starting a brand new local project.</div>
+                </div>
+            </div>
+
+            <div class="panel border-green">
+                <h2>3. THE DAILY CORE LOOP</h2>
+                
+                <div class="cmd-box" style="border-left-color: var(--cyan); background: #e0f7fa;">
+                    <div class="cmd-name">git status (The Radar)</div>
+                    <div class="cmd-code">git status</div>
+                    <div class="cmd-desc">Shows what is modified, staged, or untracked.</div>
+                    <div class="cmd-warn">RUN THIS BEFORE AND AFTER EVERY OTHER COMMAND.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git add (Stage)</div>
+                    <div class="cmd-code">git add analysis.py</div>
+                    <div class="cmd-desc">Adds a specific file to the staging area (The Bus).</div>
+                    <div class="cmd-code" style="margin-top:2px;">git add .</div>
+                    <div class="cmd-desc">Adds ALL changed files.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git commit (Save)</div>
+                    <div class="cmd-code">git commit -m "Fix data cleaning bug"</div>
+                    <div class="cmd-desc">Takes a permanent snapshot of the staging area.</div>
+                    <div class="cmd-use">Rule: Messages must be imperative ("Fix", not "Fixed").</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git push (Upload)</div>
+                    <div class="cmd-code">git push origin main</div>
+                    <div class="cmd-desc">Uploads your local commits to GitHub (Remote).</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="panel border-purple">
+                <h2>4. HISTORY & INSPECTION</h2>
+                
+                <div class="cmd-box">
+                    <div class="cmd-name">git log</div>
+                    <div class="cmd-code">git log --oneline --graph</div>
+                    <div class="cmd-desc">Shows a clean, visual tree of your commit history.</div>
+                    <div class="cmd-use">Press 'q' to exit the log view.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git diff</div>
+                    <div class="cmd-code">git diff</div>
+                    <div class="cmd-desc">Shows exact line-by-line changes in unstaged files.</div>
+                    <div class="cmd-code" style="margin-top:2px;">git diff --staged</div>
+                    <div class="cmd-desc">Shows changes that are staged (ready to commit).</div>
+                </div>
+            </div>
+
+            <div class="panel border-pink">
+                <h2>5. BRANCHING (The Sandbox)</h2>
+                <p style="font-size: 6.5pt; margin: 0 0 1mm 0;">Never code on <code>main</code>. Create branches for experiments. If the experiment fails, delete the branch.</p>
+                
+                <div class="cmd-box">
+                    <div class="cmd-name">git branch</div>
+                    <div class="cmd-code">git branch</div>
+                    <div class="cmd-desc">Lists all local branches. Active branch has a star (*).</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git switch / checkout</div>
+                    <div class="cmd-code">git switch -c feature-model-v2</div>
+                    <div class="cmd-desc">Creates a NEW branch and switches to it instantly.</div>
+                    <div class="cmd-code" style="margin-top:2px;">git switch main</div>
+                    <div class="cmd-desc">Switches back to the main branch safely.</div>
+                    <div class="cmd-use">Note: `checkout -b` does the exact same thing as `switch -c`.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git branch -d (Delete)</div>
+                    <div class="cmd-code">git branch -d feature-model-v2</div>
+                    <div class="cmd-desc">Deletes the branch locally (must be on another branch).</div>
+                </div>
+            </div>
+
+            <div class="panel border-orange">
+                <h2>6. SYNCING & MERGING</h2>
+                
+                <div class="cmd-box">
+                    <div class="cmd-name">git pull (Download & Merge)</div>
+                    <div class="cmd-code">git pull origin main</div>
+                    <div class="cmd-desc">Fetches changes from GitHub and merges them into your current branch.</div>
+                    <div class="cmd-use">Use when: Teammates updated the repo while you slept.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">git merge</div>
+                    <div class="cmd-code">git merge feature-model-v2</div>
+                    <div class="cmd-desc">Takes the changes from the feature branch and fuses them into your CURRENT branch.</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="panel border-orange">
+                <h2>7. MERGE CONFLICTS</h2>
+                <p style="font-size: 6.5pt; margin: 0 0 1mm 0;">Don't panic. Git pauses the merge because you and a teammate edited the <b>exact same line</b>.</p>
+                
+                <div class="conflict-box">
+<span class="conf-head"><<<<<<< HEAD (Current Branch)</span><br>
+learning_rate = 0.01<br>
+<span class="conf-mid">=======</span><br>
+learning_rate = 0.005<br>
+<span class="conf-tail">>>>>>>> feature-tune (Incoming)</span>
+                </div>
+                
+                <div style="font-size: 7pt; margin-bottom: 2mm;">
+                    <b>How to fix it:</b>
+                    1. Open the file in VS Code.<br>
+                    2. Delete the markers (<<<<, ====, >>>>).<br>
+                    3. Keep the code you want (or combine both).<br>
+                    4. <code>git add [file]</code><br>
+                    5. <code>git commit -m "Resolve conflict"</code>
+                </div>
+                
+                <div class="cmd-box danger" style="margin-bottom:0;">
+                    <div class="cmd-name">Abort Merge (Panic Button)</div>
+                    <div class="cmd-code">git merge --abort</div>
+                    <div class="cmd-desc">Cancels the merge and puts everything back to normal.</div>
+                </div>
+            </div>
+
+            <div class="panel emergency">
+                <h2>8. EMERGENCY RECOVERY ZONE</h2>
+                <h3>"I MESSED UP, HOW DO I UNDO?"</h3>
+                
+                <div class="cmd-box">
+                    <div class="cmd-name">1. "I staged a file by accident!"</div>
+                    <div class="cmd-code">git restore --staged file.py</div>
+                    <div class="cmd-desc">Removes it from Staging, but keeps your code safe.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">2. "I ruined my file. Reset it!"</div>
+                    <div class="cmd-code">git restore file.py</div>
+                    <div class="cmd-desc">Deletes all uncommitted changes. Restores last save.</div>
+                    <div class="cmd-warn">⚠️ DANGER: Your recent typing is lost forever.</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">3. "Typo in the last commit message!"</div>
+                    <div class="cmd-code">git commit --amend -m "New message"</div>
+                    <div class="cmd-desc">Replaces the last commit message. Do NOT do this if already pushed!</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">4. "Undo my last commit, keep code"</div>
+                    <div class="cmd-code">git reset --soft HEAD~1</div>
+                    <div class="cmd-desc">Deletes the commit, but puts all files back into Staging.</div>
+                </div>
+
+                <div class="cmd-box" style="border-left-color: var(--danger); background: #330000;">
+                    <div class="cmd-name" style="color:var(--danger);">5. "NUKE IT. DELETE EVERYTHING."</div>
+                    <div class="cmd-code" style="background:var(--danger); color:var(--paper);">git reset --hard HEAD~1</div>
+                    <div class="cmd-desc" style="color:#aaa;">Deletes the commit AND the code changes forever.</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="panel border-cyan">
+                <h2>9. GITHUB COLLABORATION</h2>
+                <p style="font-size: 6.5pt; margin: 0 0 1mm 0;">How Data Science teams work together without overwriting each other's code.</p>
+                
+                <div class="cmd-box">
+                    <div class="cmd-name">1. Ensure you are up to date</div>
+                    <div class="cmd-code">git checkout main</div>
+                    <div class="cmd-code" style="margin-top:2px;">git pull</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">2. Create your isolated branch</div>
+                    <div class="cmd-code">git switch -c add-xgboost-model</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">3. Work, Add, and Commit</div>
+                    <div class="cmd-code">git add model.py</div>
+                    <div class="cmd-code" style="margin-top:2px;">git commit -m "Add XGBoost"</div>
+                </div>
+
+                <div class="cmd-box">
+                    <div class="cmd-name">4. Push branch to GitHub</div>
+                    <div class="cmd-code">git push -u origin add-xgboost-model</div>
+                    <div class="cmd-desc">The `-u` links your local branch to the remote one.</div>
+                </div>
+
+                <div class="cmd-box" style="border-left-color: var(--pink);">
+                    <div class="cmd-name">5. Pull Request (PR)</div>
+                    <div class="cmd-desc">Go to GitHub.com, click "Compare & Pull Request". Teammates review it, then it gets merged into main.</div>
+                </div>
+            </div>
+
+            <div class="panel border-yellow" style="margin-bottom: 0;">
+                <h2>10. GIT MANTRAS</h2>
+                
+                <div class="mantra-box" style="border-color: var(--cyan); color: var(--cyan);">
+                    COMMIT EARLY.<br>COMMIT OFTEN.
+                </div>
+                
+                <div class="mantra-box" style="border-color: var(--orange); color: var(--orange);">
+                    NEVER PUSH DIRECTLY<br>TO MAIN.
+                </div>
+                
+                <div class="mantra-box" style="border-color: var(--danger); color: var(--danger); font-size: 8pt;">
+                    GIT STATUS IS YOUR<br>BEST FRIEND.<br>
+                    <span style="color:var(--black); font-family:'JetBrains Mono'; background:var(--yellow); padding: 0 2px; margin-top:2px; display:inline-block;">RUN IT BEFORE YOU PANIC.</span>
+                </div>
+                
+                <div class="mantra-box" style="border-color: var(--purple); color: var(--purple); font-size: 8pt;">
+                    A COMMIT IS A SAVE POINT.<br>
+                    <span style="color:var(--black);">A BRANCH IS AN ALTERNATE UNIVERSE.</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+</body>
+</html>

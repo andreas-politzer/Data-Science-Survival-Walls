@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andy's Data Science Survival Wales</title>
+<meta name="description" content="Andreas Politzer - Data Science, Statistics and Terminal Survival Walls. High-density field references for developers and data scientists.">
+<meta name="keywords" content="Andreas Politzer, GitHub, Data Science, Statistics, Cheat Sheet, Terminal, Bash, Git, WBS Coding School">
+<meta name="author" content="Andreas Politzer">
+<meta name="google-site-verification" content="_sxipUUKLrbMqMI__lVe_0YO-8qi8iR9AaqkglAjB84" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --grid: rgba(0, 180, 100, 0.04);
+    --green: #00b300;
+    --green-bright: #39ff14;
+    --green-dim: #006600;
+    --cyan: #00e5ff;
+    --text: #c8ffc8;
+    --muted: #4a7a4a;
+    --card-bg: rgba(0, 30, 0, 0.6);
+    --card-border: rgba(0, 180, 100, 0.25);
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Phosphor glow vignette */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+    z-index: 9;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* NAV LINK */
+  .github-nav {
+    margin-bottom: 30px;
+  }
+
+  .github-nav a {
+    font-size: 11px;
+    text-decoration: none;
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+
+  .github-nav a:hover {
+    color: var(--green-bright);
+    text-shadow: 0 0 8px var(--green-bright);
+  }
+
+  /* HEADER */
+  .header { margin-bottom: 60px; }
+
+  .prompt {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .title {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    color: var(--green-bright);
+    text-shadow:
+      0 0 10px rgba(57,255,20,0.6),
+      0 0 30px rgba(57,255,20,0.3),
+      0 0 60px rgba(57,255,20,0.1);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    animation: flicker 8s infinite;
+  }
+
+  @keyframes flicker {
+    0%, 95%, 97%, 100% { opacity: 1; }
+    96% { opacity: 0.85; }
+    96.5% { opacity: 1; }
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+    letter-spacing: 1px;
+  }
+
+  .subtitle span { color: var(--green); }
+
+  /* BLINK CURSOR */
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    height: 18px;
+    background: var(--green-bright);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blink 1s step-end infinite;
+    box-shadow: 0 0 8px var(--green-bright);
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+    margin: 32px 0;
+  }
+
+  /* CARDS BASE STRUCTURE */
+  .cards { display: grid; gap: 20px; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 28px 32px;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green-dim);
+    transition: all 0.25s ease;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+
+  .card-num {
+    font-size: 11px;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+    min-width: 32px;
+    transition: color 0.25s ease;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-bright);
+    text-shadow: 0 0 8px rgba(57,255,20,0.4);
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    padding-left: 48px;
+    transition: color 0.25s ease;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-left: 48px;
+    margin-top: 12px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid var(--green-dim);
+    color: var(--green-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+  }
+
+  /* ========================================== */
+  /* INDIVIDUELLES NEON-HOVER MECHANICS        */
+  /* ========================================== */
+
+  /* 01. STATISTICS & MATH -> CYAN GLOW */
+  .card-stats:hover {
+    border-color: rgba(0, 229, 255, 0.5);
+    background: rgba(0, 30, 40, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+  }
+  .card-stats:hover::before { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+  .card-stats:hover .card-title { color: var(--cyan); text-shadow: 0 0 10px rgba(0, 229, 255, 0.6); }
+  .card-stats:hover .card-num { color: var(--cyan); }
+  .card-stats:hover .card-desc { color: #d0f7ff; }
+  .card-stats:hover .tag { border-color: rgba(0, 229, 255, 0.4); color: var(--cyan); }
+
+  /* 02. TERMINAL & BASH -> STABLE GREEN-BRIGHT */
+  .card-terminal:hover {
+    border-color: rgba(57, 255, 20, 0.4);
+    background: rgba(0, 50, 0, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+  }
+  .card-terminal:hover::before { background: var(--green-bright); box-shadow: 0 0 12px var(--green-bright); }
+  .card-terminal:hover .card-title { color: var(--green-bright); text-shadow: 0 0 10px rgba(57, 255, 20, 0.6); }
+  .card-terminal:hover .card-num { color: var(--green-bright); }
+  .card-terminal:hover .card-desc { color: #e2ffe2; }
+  .card-terminal:hover .tag { border-color: rgba(57, 255, 20, 0.4); color: var(--green-bright); }
+
+  /* 03. GIT & GITHUB -> NEONPINK GLOW */
+  .card-git:hover {
+    border-color: rgba(255, 47, 146, 0.5);
+    background: rgba(50, 0, 25, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(255, 47, 146, 0.1);
+  }
+  .card-git:hover::before { background: #ff2f92; box-shadow: 0 0 12px #ff2f92; }
+  .card-git:hover .card-title { color: #ff2f92; text-shadow: 0 0 10px rgba(255, 47, 146, 0.6); }
+  .card-git:hover .card-num { color: #ff2f92; }
+  .card-git:hover .card-desc { color: #fff0f5; }
+  .card-git:hover .tag { border-color: rgba(255, 47, 146, 0.4); color: #ff2f92; }
+
+  /* 04. DATA VISUALIZATION -> NEONGELB GLOW */
+  .card-viz:hover {
+    border-color: rgba(255, 184, 0, 0.5);
+    background: rgba(45, 35, 0, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(255, 184, 0, 0.1);
+  }
+  .card-viz:hover::before { background: #ffb800; box-shadow: 0 0 12px #ffb800; }
+  .card-viz:hover .card-title { color: #ffb800; text-shadow: 0 0 10px rgba(255, 184, 0, 0.6); }
+  .card-viz:hover .card-num { color: #ffb800; }
+  .card-viz:hover .card-desc { color: #fffbeb; }
+  .card-viz:hover .tag { border-color: rgba(255, 184, 0, 0.4); color: #ffb800; }
+
+
+  /* FOOTER */
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0,180,100,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .footer a {
+    color: var(--green-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer a:hover { color: var(--green); }
+
+  /* SYSTEM STATUS */
+  .status-bar {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 24px;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    margin-right: 6px;
+    box-shadow: 0 0 6px var(--green-bright);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="github-nav">
+    <a href="https://github.com/andreas-politzer">
+      <span>⟵</span> BACK TO GITHUB PROFILE
+    </a>
+  </div>
+
+  <div class="header">
+    <div class="prompt">// SYSTEM READY &nbsp;·&nbsp; WBS DATA SCIENCE BOOTCAMP &nbsp;·&nbsp; BERLIN</div>
+    <h1 class="title">ANDY'S SURVIVAL WALLS<span class="cursor"></span></h1>
+    <p class="subtitle">
+      Field reference for <span>Data Science</span>, <span>Statistics</span> &amp; <span>Terminal Operations</span>.<br>
+      Print on A3. Pin to wall. Never forget the basics.
+    </p>
+  </div>
+
+  <div class="status-bar">
+    <span><span class="status-dot"></span>SYSTEM ONLINE</span>
+    <span>SHEETS LOADED: 04</span>
+    <span>FORMAT: HTML / PRINT-READY</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cards">
+
+    <a class="card card-stats" href="statistic_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">01 //</span>
+        <span class="card-title">STATISTICS SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Hypothesis testing · t-Tests · Chi-Square · ANOVA · Confidence Intervals ·
+        Logistic Regression · Effect Sizes · ML Model Evaluation · Python + R
+      </div>
+      <div class="card-tags">
+        <span class="tag">Statistics</span>
+        <span class="tag">Python</span>
+        <span class="tag">R</span>
+        <span class="tag">ML</span>
+        <span class="tag">4 pages</span>
+      </div>
+    </a>
+
+    <a class="card card-terminal" href="terminal_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">02 //</span>
+        <span class="card-title">TERMINAL SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Bash essentials · File system navigation · Process management ·
+        Python venv setup · pip · SSH · Warp terminal shortcuts
+      </div>
+      <div class="card-tags">
+        <span class="tag">Bash</span>
+        <span class="tag">Terminal</span>
+        <span class="tag">venv</span>
+        <span class="tag">SSH</span>
+      </div>
+    </a>
+
+    <a class="card card-git" href="git_github_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">03 //</span>
+        <span class="card-title">GIT &amp; GITHUB SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Git fundamentals · Branching · Merging · Pull Requests ·
+        GitHub workflow · Common disaster recovery commands
+      </div>
+      <div class="card-tags">
+        <span class="tag">Git</span>
+        <span class="tag">GitHub</span>
+        <span class="tag">Version Control</span>
+      </div>
+    </a>
+
+    <a class="card card-viz" href="data_visualization_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">04 //</span>
+        <span class="card-title">DATA VISUALIZATION SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Matplotlib OOP architecture · Seaborn Figure vs Axes level · Relational, 
+        Distribution & Categorical master matrices · Plotly Web Express · R ggplot2 framework
+      </div>
+      <div class="card-tags">
+        <span class="tag">Data Viz</span>
+        <span class="tag">Seaborn</span>
+        <span class="tag">Plotly</span>
+        <span class="tag">ggplot2</span>
+        <span class="tag">A3 Print</span>
+      </div>
+    </a>
+    <a class="card card-pcep" href="pcep_exam_sheet.html">
+      <div class="card-header">
+        <span class="card-num">05 //</span>
+        <span class="card-title">PCEP PYTHON SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Python Core Architecture · Variable vs Value · Function call flows & placeholders · Loops & range() boundary rules · Structural data structures comparison matrix · String methods · Truthy/Falsy states · Error catching & built-in hierarchy analysis
+      </div>
+      <div class="card-tags">
+        <span class="tag">Python</span>
+        <span class="tag">PCEP</span>
+        <span class="tag">Exam Prep</span>
+        <span class="tag">A3 Print</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <span>© 2026 Andreas Politzer</span>
+    <a href="https://github.com/andreas-politzer">github.com/andreas-politzer</a>
+  </div>
+
+</div>
+</body>
+</html>

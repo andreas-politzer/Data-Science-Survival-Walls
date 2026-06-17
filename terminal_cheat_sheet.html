@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TERMINAL SURVIVAL WALL - Andy's Edition v2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00c8ff;
+            --pink: #ff2f92;
+            --green: #00d84a;
+            --yellow: #ffb800;
+            --orange: #ff6b35;
+            --purple: #9b5cff;
+            --black: #151515;
+            --gray: #444444;
+            --light: #f4f4f4;
+            --paper: #ffffff;
+            --danger: #ff003c;
+        }
+        
+        @page {
+            size: A3 landscape;
+            margin: 0;
+        }
+        
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--paper); }
+            .page { margin: 0 !important; box-shadow: none !important; }
+            .no-print { display: none !important; }
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: var(--black);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7.5pt;
+            line-height: 1.3;
+        }
+
+        .page {
+            width: 420mm;
+            height: 297mm;
+            background: var(--paper);
+            margin: 10mm auto;
+            padding: 10mm;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 2mm;
+            overflow: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; margin: 0 0 1mm 0; font-weight: 700; }
+        h1 { font-size: 22pt; letter-spacing: 2px; color: var(--black); border-bottom: 4px solid var(--black); padding-bottom: 1.5mm; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 span { color: var(--cyan); font-family: 'Audiowide', sans-serif; font-size: 14pt; }
+        .subtitle { font-family: 'JetBrains Mono'; font-size: 8pt; font-weight: 700; color: var(--gray); text-transform: none; letter-spacing: 0; margin-top: 1mm; }
+        
+        h2 { font-size: 10pt; background: var(--black); color: var(--paper); padding: 1mm 3mm; display: inline-block; clip-path: polygon(0 0, 100% 0, 97% 100%, 0% 100%); margin-bottom: 1.5mm; }
+        
+        /* Layouts */
+        .grid-col-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3.5mm; flex: 1; }
+        
+        /* Panels */
+        .panel {
+            background: var(--paper);
+            border: 2px solid var(--black);
+            padding: 2.5mm;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 3.5mm;
+        }
+        .panel::after { content: ''; position: absolute; top: 3px; left: 3px; right: -7px; bottom: -7px; z-index: -1; }
+
+        /* Neon Accents */
+        .border-cyan { border-top: 4px solid var(--cyan); }
+        .border-cyan::after { background: var(--cyan); }
+        .border-pink { border-top: 4px solid var(--pink); }
+        .border-pink::after { background: var(--pink); }
+        .border-green { border-top: 4px solid var(--green); }
+        .border-green::after { background: var(--green); }
+        .border-yellow { border-top: 4px solid var(--yellow); }
+        .border-yellow::after { background: var(--yellow); }
+        .border-orange { border-top: 4px solid var(--orange); }
+        .border-orange::after { background: var(--orange); }
+        .border-purple { border-top: 4px solid var(--purple); }
+        .border-purple::after { background: var(--purple); }
+        .border-danger { border-top: 4px solid var(--danger); border-color: var(--danger); }
+        .border-danger::after { background: var(--danger); }
+
+        /* Command Boxes */
+        .cmd-box { background: var(--light); border-left: 3px solid var(--black); padding: 1.5mm 2mm; margin-bottom: 1.5mm; }
+        .cmd-box.danger { border-left-color: var(--danger); background: #fff0f3; }
+        .cmd-name { font-weight: 800; font-size: 8pt; color: var(--black); margin-bottom: 1px; text-transform: uppercase; }
+        .cmd-code { font-family: 'JetBrains Mono', monospace; font-size: 7pt; color: var(--pink); background: var(--black); padding: 1px 3px; display: inline-block; margin-bottom: 1px; }
+        .cmd-desc { font-size: 7pt; color: var(--gray); margin-bottom: 1px; }
+        .cmd-use { font-size: 6.5pt; font-style: italic; color: var(--purple); }
+        .cmd-warn { font-size: 6.5pt; color: var(--danger); font-weight: bold; margin-top: 1px; }
+        
+        /* Folder Tree */
+        .tree { font-family: 'JetBrains Mono', monospace; font-size: 7pt; background: var(--black); color: var(--green); padding: 2mm; border-radius: 2px; margin-bottom: 2mm; line-height: 1.3; }
+        
+        /* Flowchart */
+        .flowchart { display: flex; flex-direction: column; align-items: center; gap: 0.5mm; font-family: 'JetBrains Mono', monospace; font-weight: bold; font-size: 7pt; margin-top: 1mm;}
+        .flow-node { border: 2px solid var(--black); padding: 1mm; background: var(--paper); width: 85%; text-align: center; box-shadow: 2px 2px 0 var(--cyan); }
+        .flow-node.start { background: var(--yellow); box-shadow: 2px 2px 0 var(--black); }
+        .flow-node.git { background: var(--black); color: var(--paper); box-shadow: 2px 2px 0 var(--pink); }
+        .flow-arrow { color: var(--cyan); font-weight: 900; font-size: 11pt; line-height: 0.7; }
+        
+        /* Emergency Zone */
+        .emergency { background: var(--black); color: var(--paper); border: 3px solid var(--danger); padding: 3mm; box-shadow: 0 0 10px rgba(255,0,60,0.3); }
+        .emergency h3 { color: var(--danger); border-bottom: 1px solid var(--gray); margin-top: 0; padding-bottom: 1mm; font-size: 9pt; }
+        .emergency .cmd-box { background: #1a1a1a; border-left-color: var(--danger); margin-bottom: 1.5mm; padding: 1.5mm; }
+        .emergency .cmd-name { color: var(--paper); }
+        .emergency .cmd-code { color: var(--yellow); background: #333; }
+        
+        /* Mantras */
+        .mantra-box { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 9pt; font-weight: bold; color: var(--black); margin: 1.5mm 0; padding: 2mm; border: 2px dashed var(--orange); background: var(--paper); text-transform: uppercase; }
+        
+        .key { display: inline-block; border: 1px solid var(--gray); border-bottom: 2px solid var(--black); border-radius: 3px; padding: 0px 3px; background: var(--light); font-weight: bold; color: var(--black); font-size: 6.5pt; margin-right: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print" style="max-width: 420mm; margin: 6mm auto 0 auto; padding: 0 10mm;">
+        <a href="index.html" style="font-family: 'Orbitron', sans-serif; font-size: 9pt; text-decoration: none; color: var(--cyan); font-weight: bold; display: inline-flex; align-items: center; gap: 6px;">
+            <span>⟵</span> BACK TO COMMAND CENTER
+        </a>
+    </div>
+
+    <div class="page">
+        <div>
+            <h1>TERMINAL SURVIVAL WALL <span>// Andy's Edition v2.0</span></h1>
+            <div class="subtitle">MacOS • Warp • ZSH • Python • Data Science Workflows</div>
+        </div>
+        
+        <div class="grid-col-4">
+            
+            <div>
+                <div class="panel border-cyan">
+                    <h2>1. NAVIGATION & ORIENTATION</h2>
+                    
+                    <div class="tree">
+~/Developer/<br>
+├── Statistics/<br>
+├── Survival_Walls/<br>
+├── Machine_Learning/<br>
+└── Pandas_Practice/
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">pwd (Print Working Directory)</div>
+                        <div class="cmd-code">pwd</div>
+                        <div class="cmd-desc">Shows your exact current location.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">ls (List)</div>
+                        <div class="cmd-code">ls -la</div>
+                        <div class="cmd-desc">Lists ALL files (even hidden .git) + permissions.</div>
+                        <div class="cmd-code" style="margin-top:2px;">ls -lh</div>
+                        <div class="cmd-desc">Lists file sizes in KB/MB/GB.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">cd (Change Directory)</div>
+                        <div class="cmd-code">cd ~/Developer/Machine_Learning</div>
+                        <div class="cmd-desc">Moves you into the specified folder.</div>
+                        <div class="cmd-code" style="margin-top:2px;">cd ..</div>
+                        <div class="cmd-desc">Moves exactly ONE folder up.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-pink">
+                    <h2>2. FILES, FOLDERS & ARCHIVES</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">mkdir / touch</div>
+                        <div class="cmd-code">mkdir new_project</div>
+                        <div class="cmd-desc">Creates a new folder.</div>
+                        <div class="cmd-code" style="margin-top:2px;">touch config.yaml</div>
+                        <div class="cmd-desc">Creates an empty file instantly.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">cp / mv</div>
+                        <div class="cmd-code">cp data.csv backup.csv</div>
+                        <div class="cmd-desc">Duplicates a file.</div>
+                        <div class="cmd-code" style="margin-top:2px;">mv data.csv ./Clean_Data/</div>
+                        <div class="cmd-desc">Moves a file (or renames it).</div>
+                    </div>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">zip / unzip</div>
+                        <div class="cmd-code">zip -r archive.zip ./my_folder/</div>
+                        <div class="cmd-desc">Compresses a whole folder recursively.</div>
+                        <div class="cmd-code" style="margin-top:2px;">unzip dataset.zip</div>
+                        <div class="cmd-desc">Extracts the archive here.</div>
+                    </div>
+
+                    <div class="cmd-box danger">
+                        <div class="cmd-name">rm -r (Remove Recursive)</div>
+                        <div class="cmd-code">rm -r Old_Project_Folder</div>
+                        <div class="cmd-desc">Deletes folder & EVERYTHING inside FOREVER.</div>
+                        <div class="cmd-warn">⚠️ DANGER: Bypasses Trash! Check `pwd` first.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-purple">
+                    <h2>3. DATA EXPLORATION (KILLER CMDS)</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">head (Top Rows)</div>
+                        <div class="cmd-code">head -n 5 sales_data.csv</div>
+                        <div class="cmd-desc">Prints the first 5 rows of a file to the screen.</div>
+                        <div class="cmd-use">Use when: Checking CSV headers without opening Excel.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">tail (Bottom Rows / Live)</div>
+                        <div class="cmd-code">tail -n 10 app.log</div>
+                        <div class="cmd-desc">Prints the last 10 rows.</div>
+                        <div class="cmd-code" style="margin-top:2px;">tail -f training.log</div>
+                        <div class="cmd-desc">Follows the file live as new lines are added!</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">cat (Concatenate)</div>
+                        <div class="cmd-code">cat .gitignore</div>
+                        <div class="cmd-desc">Dumps the entire file content into the terminal.</div>
+                        <div class="cmd-use">Use when: Quickly reading small config files.</div>
+                    </div>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">less (Read Large Files)</div>
+                        <div class="cmd-code">less massive_dataset.json</div>
+                        <div class="cmd-desc">Opens huge files in a scrollable viewer without crashing the terminal. (Press 'q' to quit).</div>
+                    </div>
+                </div>
+
+                <div class="panel border-green">
+                    <h2>4. SEARCH & DISCOVERY</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">find</div>
+                        <div class="cmd-code">find . -name "*.csv"</div>
+                        <div class="cmd-desc">Searches current folder (.) for all CSV files.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">grep (Search inside files)</div>
+                        <div class="cmd-code">grep "import pandas" *.py</div>
+                        <div class="cmd-desc">Finds exact text string inside all Python files.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-yellow">
+                    <h2>5. PYTHON ENVIRONMENTS</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">Virtual Environment</div>
+                        <div class="cmd-code">python -m venv venv</div>
+                        <div class="cmd-desc">Creates isolated sandbox.</div>
+                        <div class="cmd-code" style="margin-top:2px;">source venv/bin/activate</div>
+                        <div class="cmd-desc">Turns sandbox ON (Prompt shows `(venv)`).</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">pip</div>
+                        <div class="cmd-code">pip install -r requirements.txt</div>
+                        <div class="cmd-desc">Installs bulk packages from list.</div>
+                        <div class="cmd-code" style="margin-top:2px;">pip freeze > requirements.txt</div>
+                        <div class="cmd-desc">Saves your current environment state.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-orange">
+                    <h2>6. HOMEBREW (Mac Package Mgr)</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">brew install / search</div>
+                        <div class="cmd-code">brew install git python</div>
+                        <div class="cmd-code" style="margin-top:2px;">brew search postgresql</div>
+                        <div class="cmd-desc">Finds and installs system tools.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">brew update & upgrade</div>
+                        <div class="cmd-code">brew update && brew upgrade</div>
+                        <div class="cmd-desc">Updates Homebrew itself, then upgrades all tools.</div>
+                    </div>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">brew doctor</div>
+                        <div class="cmd-code">brew doctor</div>
+                        <div class="cmd-desc">Diagnoses system issues if packages refuse to work.</div>
+                        <div class="cmd-use">Use when: "Command not found" after installing.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-cyan">
+                    <h2>7. DS LAUNCH & SYSTEM</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">IDE Launchers</div>
+                        <div class="cmd-code">code .</div>
+                        <div class="cmd-desc">Opens current folder in VS Code.</div>
+                        <div class="cmd-code" style="margin-top:2px;">jupyter lab</div>
+                        <div class="cmd-desc">Launches Jupyter Lab in browser.</div>
+                        <div class="cmd-code" style="margin-top:2px;">open -a RStudio</div>
+                        <div class="cmd-desc">Launches RStudio application.</div>
+                    </div>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">Process Control</div>
+                        <div class="cmd-code">top</div>
+                        <div class="cmd-desc">Live task manager (press 'q' to quit).</div>
+                        <div class="cmd-code" style="margin-top:2px;">kill -9 1234</div>
+                        <div class="cmd-desc">Force kills frozen process by its PID number.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-pink">
+                    <h2>8. NETWORK & SSH</h2>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">ping / curl</div>
+                        <div class="cmd-code">ping github.com</div>
+                        <div class="cmd-desc">Checks internet connection stability (CTRL+C to stop).</div>
+                        <div class="cmd-code" style="margin-top:2px;">curl ifconfig.me</div>
+                        <div class="cmd-desc">Returns your public IP address.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">SSH GitHub Auth</div>
+                        <div class="cmd-code">ssh-keygen -t ed25519 -C "mail@.com"</div>
+                        <div class="cmd-desc">Generates a new secure SSH key for GitHub access.</div>
+                        <div class="cmd-code" style="margin-top:2px;">ssh -T git@github.com</div>
+                        <div class="cmd-desc">Tests if your GitHub SSH connection is working.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel border-green">
+                    <h2>9. SUPERPOWERS</h2>
+                    <ul style="list-style: none; padding:0; margin:0; font-size: 7pt;">
+                        <li style="margin-bottom: 1.5mm;"><span class="key">TAB</span> <b>Autocomplete.</b> Never type full names.</li>
+                        <li style="margin-bottom: 1.5mm;"><span class="key">CTRL</span>+<span class="key">C</span> <b>Kill Process.</b> Stops a running script.</li>
+                        <li style="margin-bottom: 1.5mm;"><span class="key">CTRL</span>+<span class="key">L</span> <b>Clear Screen.</b> Pushes clutter out of view.</li>
+                        <li style="margin-bottom: 1.5mm;"><span class="key">CTRL</span>+<span class="key">R</span> <b>Reverse Search.</b> Finds past commands.</li>
+                        <li><span class="key">↑</span> <b>Cycle History.</b> Arrow up brings back commands.</li>
+                    </ul>
+                </div>
+
+                <div class="panel border-purple">
+                    <h2>10. CORE DS WORKFLOW</h2>
+                    <div class="flowchart">
+                        <div class="flow-node start">1. Project Idea</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node">mkdir new_project</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node">cd new_project</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node">python -m venv venv</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node">source venv/bin/activate</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node">pip install pandas</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node">code .</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node git">git init</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-node git">git add & commit</div>
+                    </div>
+                </div>
+
+                <div class="panel emergency">
+                    <h2>11. EMERGENCY ZONE</h2>
+                    <h3>WHAT TO DO WHEN IT'S BROKEN</h3>
+                    
+                    <div class="cmd-box">
+                        <div class="cmd-name">1. "What did I just break?"</div>
+                        <div class="cmd-code">git status</div>
+                        <div class="cmd-desc">Tells you which files changed or were deleted.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">2. "Where the hell am I?"</div>
+                        <div class="cmd-code">pwd</div>
+                        <div class="cmd-desc">Ensure you didn't `cd` into system folders.</div>
+                    </div>
+
+                    <div class="cmd-box">
+                        <div class="cmd-name">3. "What did I just type?!"</div>
+                        <div class="cmd-code">history | tail -n 10</div>
+                        <div class="cmd-desc">Shows your last 10 executed commands.</div>
+                    </div>
+                </div>
+
+                <div class="panel border-yellow" style="margin-bottom: 0;">
+                    <h2>12. MANTRAS</h2>
+                    
+                    <div class="mantra-box" style="border-color: var(--danger); color: var(--danger);">
+                        CHECK WHERE YOU ARE (pwd)<br>BEFORE YOU DELETE (rm -r)!
+                    </div>
+                    
+                    <div class="mantra-box" style="border-color: var(--purple); color: var(--purple); font-size: 8pt;">
+                        THE TERMINAL DOES EXACTLY<br>WHAT YOU TELL IT TO DO.<br>
+                        <span style="color:var(--black);">NOT WHAT YOU MEANT.</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>
