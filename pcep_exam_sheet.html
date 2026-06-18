@@ -1,4 +1,4 @@
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -255,7 +255,7 @@ html_content = """<!DOCTYPE html>
 
     <div class="no-print" style="max-width: 420mm; margin: 6mm auto 0 auto; padding: 0 10mm;">
         <a href="index.html" style="font-family: 'Orbitron', sans-serif; font-size: 9pt; text-decoration: none; color: var(--cyan); font-weight: bold; display: inline-flex; align-items: center; gap: 6px;">
-            <span>⟵</span> BACK TO COMMAND CENTER
+            <span>⟵</span> BACK TO COMMAND CENTER </a>
     <div class="page">
         <table class="header-table">
             <tr>
@@ -792,10 +792,3 @@ html_content = """<!DOCTYPE html>
 
 </body>
 </html>
-"""
-
-with open("pcep_python_survival_wall_v2.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-HTML("pcep_python_survival_wall_v2.html").write_pdf("pcep_python_survival_wall_v2.pdf")
-print("V2.0 COMPILATION REVENUE SUCCESSFUL.")
