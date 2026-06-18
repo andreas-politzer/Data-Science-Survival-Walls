@@ -329,6 +329,21 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
+
+  /* 05 // PCEP CARD SYSTEM ALIGNMENT */
+  .card-pcep {
+    border-color: var(--green-dim); /* Fügt sich ein in die grüne Matrix-Optik */
+  }
+
+  /* Der Hover-Effekt: Wechselt die Farbe, sobald die Maus drüberfährt */
+  .card-pcep:hover {
+    border-color: #ff2f92 !important; /* Wechselt zu Neon-Pink */
+    box-shadow: 0 0 15px rgba(255, 47, 146, 0.3);
+  }
+
+  .card-pcep:hover .card-title {
+    color: #ff2f92 !important; /* Titel leuchtet ebenfalls pink auf */
+  }
 </style>
 </head>
 <body>
