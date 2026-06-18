@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>STATISTICS SURVIVAL WALL - Andy's Edition v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --cyan: #00c8ff;
+        --pink: #ff2f92;
+        --green: #00d84a;
+        --yellow: #ffb800;
+        --orange: #ff6b35;
+        --purple: #9b5cff;
+        --black: #151515;
+        --gray: #444444;
+        --light: #f4f4f4;
+        --paper: #ffffff;
+    }
+    
+    @page {
+        size: A3 landscape;
+        margin: 0;
+    }
+    
+    @media print {
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: var(--paper); }
+        .page { margin: 0 !important; box-shadow: none !important; page-break-after: always; }
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #222;
+        color: var(--black);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 8pt;
+        line-height: 1.3;
+    }
+
+    .page {
+        width: 420mm;
+        height: 297mm;
+        background: var(--paper);
+        margin: 10mm auto;
+        padding: 10mm;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 4mm;
+        overflow: hidden;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; margin: 0 0 1.5mm 0; font-weight: 700; }
+    h1 { font-size: 24pt; letter-spacing: 2px; color: var(--black); border-bottom: 4px solid var(--black); padding-bottom: 2mm; display: flex; justify-content: space-between; }
+    h1 span { color: var(--pink); font-family: 'Audiowide', sans-serif; }
+    h2 { font-size: 13pt; background: var(--black); color: var(--paper); padding: 1.5mm 4mm; display: inline-block; clip-path: polygon(0 0, 100% 0, 97% 100%, 0% 100%); margin-bottom: 2mm; }
+    h3 { font-size: 9.5pt; color: var(--black); border-bottom: 1px solid var(--gray); padding-bottom: 1mm; margin-top: 2mm; }
+    
+    /* Layouts */
+    .grid-col-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; flex: 1; }
+    .grid-col-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; flex: 1; }
+    .grid-col-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; flex: 1; }
+    .grid-col-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3mm; flex: 1; }
+    
+    /* Panels */
+    .panel {
+        background: var(--paper);
+        border: 2px solid var(--black);
+        padding: 3mm;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .panel::after { content: ''; position: absolute; top: 3px; left: 3px; right: -7px; bottom: -7px; z-index: -1; }
+
+    /* Neon Accents */
+    .border-cyan { border-top: 4px solid var(--cyan); }
+    .border-cyan::after { background: var(--cyan); }
+    .border-pink { border-top: 4px solid var(--pink); }
+    .border-pink::after { background: var(--pink); }
+    .border-green { border-top: 4px solid var(--green); }
+    .border-green::after { background: var(--green); }
+    .border-yellow { border-top: 4px solid var(--yellow); }
+    .border-yellow::after { background: var(--yellow); }
+    .border-orange { border-top: 4px solid var(--orange); }
+    .border-orange::after { background: var(--orange); }
+    .border-purple { border-top: 4px solid var(--purple); }
+    .border-purple::after { background: var(--purple); }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 2mm; }
+    th, td { border: 1px solid var(--gray); padding: 1mm; text-align: left; }
+    th { background: var(--light); font-family: 'Orbitron', sans-serif; font-size: 7pt; }
+    
+    .code-block { background: var(--light); border-left: 3px solid var(--black); padding: 2mm; font-size: 7pt; overflow-x: hidden; margin-top: auto; }
+    .code-title { font-weight: bold; color: var(--pink); font-size: 6.5pt; margin-bottom: 1px; text-transform: uppercase; }
+    
+    .math { font-family: serif; font-style: italic; font-size: 11pt; font-weight: bold; color: var(--purple); }
+    
+    .flowchart { display: flex; flex-direction: column; align-items: center; gap: 1mm; font-family: 'Orbitron', sans-serif; font-size: 7.5pt;}
+    .flow-node { border: 1px solid var(--black); padding: 1.5mm; background: var(--light); width: 100%; text-align: center; border-radius: 2px;}
+    .flow-arrow { color: var(--pink); font-weight: bold; font-size: 10pt; line-height: 1; }
+    
+    ul, ol { margin: 1mm 0 2mm 0; padding-left: 4mm; }
+    li { margin-bottom: 0.5mm; }
+    
+    .tag { display: inline-block; background: var(--black); color: var(--paper); padding: 0.5mm 1mm; font-size: 6.5pt; border-radius: 2px; }
+    
+    .mantra-box { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 10pt; font-weight: bold; color: var(--black); margin: 2mm 0; padding: 2mm; border: 2px dashed var(--pink); background: var(--light); text-transform: uppercase; }
+    
+    /* Output Anatomy CSS */
+    .anatomy-console { background: var(--black); color: #00ff00; padding: 3mm; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; margin-bottom: 2mm; position: relative; }
+    .anatomy-label { background: var(--paper); color: var(--black); padding: 1px 3px; border: 1px solid var(--black); font-size: 6pt; position: absolute; font-family: 'Orbitron'; }
+    .highlight { background: rgba(255, 255, 255, 0.2); padding: 0 2px; }
+    
+    /* ASCII Tree CSS */
+    .ascii-tree { font-family: 'JetBrains Mono', monospace; font-size: 8pt; white-space: pre; background: var(--light); padding: 4mm; border: 1px solid var(--gray); overflow-x: auto; font-weight: bold; line-height: 1.2; }
+    .tree-hl-num { color: var(--pink); }
+    .tree-hl-cat { color: var(--cyan); }
+    .tree-hl-test { background: var(--black); color: var(--yellow); padding: 0 4px; border-radius: 2px; }
+
+    /* Confusion Matrix */
+    .cm-table td { text-align: center; padding: 3mm; font-size: 9pt; font-weight: bold; }
+    .cm-tp { background: #d4edda; color: #155724; }
+    .cm-tn { background: #d4edda; color: #155724; }
+    .cm-fp { background: #f8d7da; color: #721c24; }
+    .cm-fn { background: #f8d7da; color: #721c24; }
+</style>
+</head>
+<body>
+
+<div class="page page-1">
+    <h1>STATISTICS SURVIVAL WALL <span>// Andy's Edition // PG 01</span></h1>
+    <h2>CORE FOUNDATIONS & THEORIES</h2>
+    
+    <div class="grid-col-5">
+        <div class="panel border-cyan">
+            <h3>Greek Symbols & Notation</h3>
+            <table>
+                <tr><td class="math">μ</td><td>Population Mean</td></tr>
+                <tr><td class="math">x̄</td><td>Sample Mean</td></tr>
+                <tr><td class="math">σ</td><td>Population Std Dev</td></tr>
+                <tr><td class="math">s</td><td>Sample Std Dev</td></tr>
+                <tr><td class="math">α</td><td>Alpha (Type I Error Rate)</td></tr>
+                <tr><td class="math">β</td><td>Beta (Type II Error Rate)</td></tr>
+                <tr><td class="math">χ²</td><td>Chi-Squared Statistic</td></tr>
+                <tr><td class="math">F</td><td>F-Statistic (ANOVA/Reg)</td></tr>
+                <tr><td class="math">r</td><td>Pearson Correlation</td></tr>
+                <tr><td class="math">R²</td><td>Variance Explained</td></tr>
+                <tr><td class="math">η²</td><td>Eta Squared (Effect)</td></tr>
+                <tr><td class="math">d</td><td>Cohen's d (Effect)</td></tr>
+                <tr><td class="math">n</td><td>Sample Size</td></tr>
+                <tr><td class="math">df</td><td>Degrees of Freedom</td></tr>
+            </table>
+        </div>
+
+        <div class="panel border-pink">
+            <h3>Descriptive Stats</h3>
+            <ul>
+                <li><b>Mean:</b> Average. Sensitive to outliers.</li>
+                <li><b>Median:</b> Middle value (50th percentile). Robust.</li>
+                <li><b>Mode:</b> Most frequent value.</li>
+                <li><b>Variance (s²):</b> Avg squared deviation from mean.</li>
+                <li><b>Std Dev (s):</b> Square root of variance. In original units.</li>
+                <li><b>IQR:</b> Q3 - Q1. Middle 50% of data.</li>
+            </ul>
+            <h3>Distribution Concepts</h3>
+            <ul>
+                <li><b>Population:</b> The entire group (μ, σ).</li>
+                <li><b>Sample:</b> Subset (x̄, s).</li>
+                <li><b>Sampling Dist:</b> Dist of a statistic (e.g., means) across infinite samples.</li>
+            </ul>
+        </div>
+
+        <div class="panel border-yellow">
+            <h3>Central Limit Theorem</h3>
+            <p>As sample size (n ≥ 30) increases, the sampling distribution of the mean becomes normally distributed, regardless of the population's shape.</p>
+            
+            <h3>Normal Distribution</h3>
+            <ul>
+                <li>Symmetrical, bell-shaped.</li>
+                <li><b>68-95-99.7 Rule:</b> % of data within 1, 2, and 3 standard deviations.</li>
+            </ul>
+
+            <h3>Confidence Intervals (CI)</h3>
+            <p>Range containing the true parameter with X% confidence.</p>
+            <table>
+                <tr><th>Level</th><th>Z-Crit</th><th>Interpretation</th></tr>
+                <tr><td>90%</td><td>1.645</td><td>Narrow, higher error</td></tr>
+                <tr><td>95%</td><td>1.960</td><td>Standard baseline</td></tr>
+                <tr><td>99%</td><td>2.576</td><td>Wide, conservative</td></tr>
+            </table>
+        </div>
+
+        <div class="panel border-orange">
+            <h3>Alpha, Beta & Power</h3>
+            <table>
+                <tr>
+                    <th>Decision</th>
+                    <th>H0 True</th>
+                    <th>H0 False</th>
+                </tr>
+                <tr>
+                    <td><b>Reject H0</b></td>
+                    <td>Type I Error (α)</td>
+                    <td>True Pos (Power)</td>
+                </tr>
+                <tr>
+                    <td><b>Fail Reject</b></td>
+                    <td>True Negative</td>
+                    <td>Type II Error (β)</td>
+                </tr>
+            </table>
+            <ul>
+                <li><b>α (Alpha):</b> Prob of rejecting a true H0 (False Positive).</li>
+                <li><b>β (Beta):</b> Prob of failing to reject false H0 (False Negative).</li>
+                <li><b>Power (1 - β):</b> Prob of correctly rejecting a false H0.</li>
+            </ul>
+        </div>
+
+        <div class="panel border-green">
+            <h3>Hypothesis Workflow</h3>
+            <div class="flowchart">
+                <div class="flow-node">1. Formulate Question</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">2. State H0 & HA</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">3. Choose Alpha (α)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">4. Check Assumptions</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">5. Choose & Run Test</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">6. Interpret p-value</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">7. Check Effect Size</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid-col-3" style="margin-top: 2mm;">
+        <div class="panel border-cyan" style="grid-column: span 2;">
+            <h3>Anatomy of a Statistical Output</h3>
+            <p>Most software prints a cryptic block. Here is how to decode the matrix.</p>
+            <div class="anatomy-console">
+                > t.test(Group_A, Group_B, var.equal=FALSE)<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Welch Two Sample t-test<br><br>
+                data: Group_A and Group_B<br>
+                t = <span class="highlight" style="color:var(--pink);">2.841</span>, df = <span class="highlight" style="color:var(--yellow);">47.3</span>, p-value = <span class="highlight" style="color:var(--cyan);">0.0067</span><br>
+                alternative hypothesis: true difference in means is not equal to 0<br>
+                95 percent confidence interval:<br>
+                &nbsp;<span class="highlight" style="color:var(--orange);">1.3225&nbsp;&nbsp;&nbsp;7.1031</span><br>
+                sample estimates:<br>
+                mean of x&nbsp;&nbsp;mean of y <br>
+                &nbsp;126.33&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;122.11 
+            </div>
+            
+            <div class="grid-col-4" style="gap: 2mm; margin-top: 2mm;">
+                <div style="border-left: 3px solid var(--pink); padding-left: 2mm;">
+                    <b>t (Test Statistic)</b><br>The calculated signal-to-noise ratio. Larger absolute value = stronger signal.
+                </div>
+                <div style="border-left: 3px solid var(--yellow); padding-left: 2mm;">
+                    <b>df (Degrees of Freedom)</b><br>Sample size adjusted for parameters. With Welch, this gets fractional (47.3).
+                </div>
+                <div style="border-left: 3px solid var(--cyan); padding-left: 2mm;">
+                    <b>p-value (Decision)</b><br>Probability of data assuming H0 is true. If p < α (e.g. 0.05), Reject H0.
+                </div>
+                <div style="border-left: 3px solid var(--orange); padding-left: 2mm;">
+                    <b>CI (Plausible Range)</b><br>If the CI does NOT cross 0, the difference is statistically significant.
+                </div>
+            </div>
+        </div>
+
+        <div class="panel border-pink" style="background: var(--black); color: var(--paper);">
+            <h3 style="color: var(--pink); border-bottom-color: var(--gray);">Statistical Mantras</h3>
+            
+            <p style="font-size: 7pt; color: var(--cyan); margin-bottom: 0;">STANDARD RULE:</p>
+            <div class="mantra-box" style="border-color: var(--cyan); color: var(--cyan); background: transparent; padding: 1mm; margin-top: 0;">
+                If the p is low,<br>the null (H0) must go!
+            </div>
+
+            <p style="font-size: 7pt; color: var(--pink); margin-bottom: 0; margin-top: 2mm;">MASTER CUSTOM RULE:</p>
+            <div class="mantra-box" style="border-color: var(--pink); color: var(--pink); background: transparent; padding: 1mm; margin-top: 0;">
+                If the p is high,<br>the 1 (H1) must die! 🍌
+            </div>
+            
+            <ul style="font-size: 7.5pt; margin-top: 2mm;">
+                <li><b>Fail to reject H0 ≠ Accept H0.</b> (Lack of evidence is not proof of absence).</li>
+                <li><b style="color: var(--yellow);">Significant ≠ Important.</b> (Check Effect Size!)</li>
+                <li><b>Correlation ≠ Causation.</b></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="page page-2">
+    <h1>STATISTICS SURVIVAL WALL <span>// Andy's Edition // PG 02</span></h1>
+    <h2>TEST SELECTION PROTOCOL & CORE TESTS</h2>
+    
+    <div class="grid-col-2" style="grid-template-columns: 2.5fr 1fr; gap: 4mm;">
+        <div class="panel border-yellow">
+            <h3>Test Selection Terminal</h3>
+            <div class="ascii-tree">
+WHAT IS YOUR OUTCOME VARIABLE?
+│
+├── <span class="tree-hl-num">NUMERICAL (Continuous/Interval)</span>
+│   │
+│   ├── Compare to a fixed target value ─────────────> <span class="tree-hl-test">One Sample t-Test</span>
+│   │
+│   ├── Compare groups (Categorical Predictor)
+│   │   │
+│   │   ├── 2 Independent Groups ────────────────────> <span class="tree-hl-test">Welch Two-Sample t</span>
+│   │   │
+│   │   ├── 2 Related/Paired Groups (Before/After) ──> <span class="tree-hl-test">Paired t-Test</span>
+│   │   │
+│   │   └── 3+ Independent Groups ───────────────────> <span class="tree-hl-test">One-Way ANOVA</span>
+│   │
+│   └── Relationship (Numerical Predictor)
+│       │
+│       ├── Linear Relationship ─────────────────────> <span class="tree-hl-test">Pearson Correlation</span>
+│       └── Monotonic (Ranked) Relationship ─────────> <span class="tree-hl-test">Spearman Correlation</span>
+│
+└── <span class="tree-hl-cat">CATEGORICAL (Nominal/Ordinal)</span>
+    │
+    ├── Proportion (1 Variable, Binary Outcome) ─────> <span class="tree-hl-test">Binomial Test</span>
+    │
+    ├── Frequencies fit expected distribution? ──────> <span class="tree-hl-test">Chi² Goodness of Fit</span>
+    │
+    └── Association between 2 Variables ─────────────> <span class="tree-hl-test">Chi² Independence</span>
+            </div>
+        </div>
+
+        <div class="panel border-orange">
+            <h3>Assumption Failure Matrix</h3>
+            <p>Parametric tests require normality and equal variance. If assumptions fail, use non-parametric equivalents (Rank-based).</p>
+            <table>
+                <tr>
+                    <th style="background: var(--black); color: white;">Wanted Test</th>
+                    <th>Broken Assumption</th>
+                    <th style="background: var(--yellow); color: black;">Use Instead</th>
+                </tr>
+                <tr>
+                    <td>Indep. t-Test</td>
+                    <td>Unequal Variance</td>
+                    <td><b>Welch t-Test</b></td>
+                </tr>
+                <tr>
+                    <td>Indep. t-Test</td>
+                    <td>Non-Normal (Outliers)</td>
+                    <td><b>Mann-Whitney U</b></td>
+                </tr>
+                <tr>
+                    <td>Paired t-Test</td>
+                    <td>Non-Normal</td>
+                    <td><b>Wilcoxon Signed Rank</b></td>
+                </tr>
+                <tr>
+                    <td>ANOVA</td>
+                    <td>Non-Normal</td>
+                    <td><b>Kruskal-Wallis</b></td>
+                </tr>
+                <tr>
+                    <td>Pearson (r)</td>
+                    <td>Non-Normal / Non-Linear</td>
+                    <td><b>Spearman (ρ)</b></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="grid-col-4" style="margin-top: 2mm;">
+        <div class="panel border-cyan">
+            <h3>1. Welch Two-Sample t</h3>
+            <p><b>H0:</b> μ1 = μ2.<br>Compares means of 2 independent groups. Doesn't assume equal variance (Standard!).</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>stats.ttest_ind(a, b, equal_var=False)
+                <div class="code-title" style="margin-top:1mm;">R</div>t.test(val ~ grp, var.equal=FALSE)
+            </div>
+        </div>
+        
+        <div class="panel border-pink">
+            <h3>2. Paired t-Test</h3>
+            <p><b>H0:</b> μ_diff = 0.<br>Compares means from same group at different times (Before vs After).</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>stats.ttest_rel(before, after)
+                <div class="code-title" style="margin-top:1mm;">R</div>t.test(before, after, paired=TRUE)
+            </div>
+        </div>
+
+        <div class="panel border-green">
+            <h3>3. One-Way ANOVA</h3>
+            <p><b>H0:</b> μ1 = μ2 = μ3...<br>Compares means of 3+ groups. If p<0.05, at least one group differs. (Needs Post-Hoc!).</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>stats.f_oneway(g1, g2, g3)
+                <div class="code-title" style="margin-top:1mm;">R</div>summary(aov(val ~ grp, data=df))
+            </div>
+        </div>
+
+        <div class="panel border-yellow">
+            <h3>4. Chi-Square Indep.</h3>
+            <p><b>H0:</b> Variables are independent.<br>Tests association between 2 categorical variables (e.g. Pet Type x City).</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>chi2_contingency(pd.DataFrame(obs))
+                <div class="code-title" style="margin-top:1mm;">R</div>chisq.test(table_data)
+            </div>
+        </div>
+        
+        <div class="panel border-purple">
+            <h3>5. Pearson Correlation</h3>
+            <p><b>H0:</b> r = 0.<br>Measures linear strength between 2 continuous variables (-1 to 1).</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>stats.pearsonr(df['x'], df['y'])
+                <div class="code-title" style="margin-top:1mm;">R</div>cor.test(df$x, df$y)
+            </div>
+        </div>
+
+        <div class="panel border-orange">
+            <h3>6. Mann-Whitney U</h3>
+            <p><b>H0:</b> Distributions equal.<br>Non-parametric alternative to independent t-test (compares ranks, not means).</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>stats.mannwhitneyu(grp_a, grp_b)
+                <div class="code-title" style="margin-top:1mm;">R</div>wilcox.test(x, y, paired=FALSE)
+            </div>
+        </div>
+
+        <div class="panel border-cyan">
+            <h3>7. Wilcoxon Signed Rank</h3>
+            <p><b>H0:</b> Median diff = 0.<br>Non-parametric alternative to paired t-test.</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>stats.wilcoxon(before, after)
+                <div class="code-title" style="margin-top:1mm;">R</div>wilcox.test(before, after, paired=TRUE)
+            </div>
+        </div>
+
+        <div class="panel border-pink">
+            <h3>8. Kruskal-Wallis</h3>
+            <p><b>H0:</b> Medians equal.<br>Non-parametric alternative to ANOVA (3+ groups).</p>
+            <div class="code-block">
+                <div class="code-title">Python</div>stats.kruskal(g1, g2, g3)
+                <div class="code-title" style="margin-top:1mm;">R</div>kruskal.test(val ~ grp)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page page-3">
+    <h1>STATISTICS SURVIVAL WALL <span>// Andy's Edition // PG 03</span></h1>
+    <h2>REGRESSION, EFFECT SIZES & REPORTING</h2>
+    
+    <div class="grid-col-2" style="gap: 4mm;">
+        <div class="panel border-green">
+            <h3>Linear & Multiple Regression</h3>
+            <p class="math" style="text-align:center;">y = β0 + β1x1 + β2x2 + ... + ε</p>
+            <p>Models the relationship between predictors (x) and a continuous outcome (y).</p>
+            
+            <div class="anatomy-console">
+                <b>Regression Decoder:</b><br>
+                <span style="color:var(--yellow)">Intercept (β0):</span> Predicted y when all x = 0.<br>
+                <span style="color:var(--cyan)">Coefficient (Slope β1):</span> Expected change in y for a 1-unit increase in x, holding other x constant.<br>
+                <span style="color:var(--pink)">Residual (ε):</span> Distance from data point to regression line.<br>
+                <span style="color:var(--orange)">R² (R-squared):</span> % of variance in y explained by the model.<br>
+                <span style="color:var(--purple)">Adjusted R²:</span> R² penalized for adding useless predictors (always use this for Multiple Reg).
+            </div>
+            
+            <div class="grid-col-2" style="gap: 2mm;">
+                <div>
+                    <b>Assumptions & Diagnostics:</b>
+                    <ul>
+                        <li><b>Linearity:</b> Plot residuals vs fitted.</li>
+                        <li><b>Homoscedasticity:</b> Equal variance of residuals.</li>
+                        <li><b>Normality:</b> Q-Q Plot of residuals.</li>
+                        <li><b>Multicollinearity:</b> Check VIF (Variance Inflation Factor). If VIF > 5, predictors are highly correlated.</li>
+                    </ul>
+                </div>
+                <div class="code-block" style="margin: 0;">
+                    <div class="code-title">Python</div>
+                    import statsmodels.formula.api as smf<br>
+                    smf.ols("y ~ x1 + x2", data=df).fit().summary()
+                    <div class="code-title" style="margin-top:2mm;">R</div>
+                    summary(lm(y ~ x1 + x2, data=df))
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-col-2" style="gap: 4mm;">
+            <div class="panel border-purple">
+                <h3>Logistic Regression</h3>
+                <p>Predicts a <b>Binary</b> outcome (0/1, Yes/No).</p>
+                <ul>
+                    <li><b>Odds:</b> P(Event) / P(No Event).</li>
+                    <li><b>Logit:</b> Natural log of the odds. The model runs linearly on logits.</li>
+                    <li><b>Odds Ratio (OR):</b> e^(Coef). OR > 1  → Increases likelihood
+OR = 1  → No effect
+OR < 1  → Decreases likelihood</li>
+                </ul>
+                <div class="code-block">
+                    <div class="code-title">Python</div>
+                    smf.logit("y ~ x", data=df).fit()
+                    <div class="code-title" style="margin-top:1mm;">R</div>
+                    glm(y~x, family=binomial)
+                </div>
+            </div>
+
+            <div class="panel border-cyan">
+                <h3>Post-Hoc Analysis</h3>
+                <div style="background:var(--light); padding: 2mm; border-left:3px solid var(--black); margin-bottom: 2mm;">
+                    <b>ANOVA answers:</b> "Is there ANY difference?"<br>
+                    <b>Tukey answers:</b> "WHICH groups differ?"
+                </div>
+                <ul>
+                    <li><b>Tukey HSD:</b> Compares all pairs safely.</li>
+                    <li><b>Bonferroni:</b> p_new = p * (num_tests). Strict!</li>
+                </ul>
+                <div class="code-block">
+                    <div class="code-title">Python (Tukey)</div>
+                    pairwise_tukeyhsd(df['y'], df['grp'])
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid-col-4" style="margin-top: 4mm;">
+        <div class="panel border-pink" style="grid-column: span 2;">
+            <h3>Effect Sizes (Practical Significance)</h3>
+            <p style="font-size:10pt; text-align:center; margin: 1mm 0; color:var(--pink); font-weight:bold;">STATISTICAL SIGNIFICANCE ≠ PRACTICAL SIGNIFICANCE</p>
+            <p>A p-value only tells you an effect exists. Effect size tells you if you should care.</p>
+            
+            <div class="grid-col-3" style="gap:2mm; text-align:center;">
+                <div style="border:1px solid var(--gray);">
+                    <b style="background:var(--light); display:block; padding:1px;">Cohen's d (t-Test)</b>
+                    0.2 = Small<br>0.5 = Medium<br>0.8 = Large
+                </div>
+                <div style="border:1px solid var(--gray);">
+                    <b style="background:var(--light); display:block; padding:1px;">Pearson r (Corr)</b>
+                    0.1 = Weak<br>0.3 = Moderate<br>0.5 = Strong
+                </div>
+                <div style="border:1px solid var(--gray);">
+                    <b style="background:var(--light); display:block; padding:1px;">Eta² η² (ANOVA)</b>
+                    0.01 = Small<br>0.06 = Medium<br>0.14 = Large
+                </div>
+            </div>
+        </div>
+
+        <div class="panel border-yellow">
+            <h3>Reporting Checklist</h3>
+            <p>Always report these elements in APA format:</p>
+            <ul style="list-style-type: '✓ ';">
+                <li>Test used</li>
+                <li>Test statistic (t, F, χ²)</li>
+                <li>Degrees of freedom (df)</li>
+                <li>Exact p-value (p = 0.034)</li>
+                <li>Effect size (d, η², OR)</li>
+                <li>Confidence interval (CI)</li>
+            </ul>
+        </div>
+
+        <div class="panel border-orange">
+            <h3>Python ↔ R Translation</h3>
+            <table>
+                <tr><th>Concept</th><th>Python</th><th>R</th></tr>
+                <tr><td>Mean</td><td><code>df.mean()</code></td><td><code>mean(x)</code></td></tr>
+                <tr><td>SD</td><td><code>df.std()</code></td><td><code>sd(x)</code></td></tr>
+                <tr><td>Summary</td><td><code>df.describe()</code></td><td><code>summary(x)</code></td></tr>
+                <tr><td>Crosstab</td><td><code>pd.crosstab()</code></td><td><code>table()</code></td></tr>
+                <tr><td>Plot</td><td><code>seaborn</code></td><td><code>ggplot2</code></td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="page page-4">
+    <h1>STATISTICS SURVIVAL WALL <span>// Andy's Edition // PG 04</span></h1>
+    <h2>MACHINE LEARNING & MODEL EVALUATION</h2>
+    
+    <div class="grid-col-3" style="gap: 4mm;">
+        <div class="panel border-cyan">
+            <h3>Data Splitting & Validation</h3>
+            <p>Never test a model on the data it trained on (Data Leakage / Overfitting).</p>
+            <ul>
+                <li><b>Train Set (70-80%):</b> Used by the algorithm to learn patterns.</li>
+                <li><b>Test Set (20-30%):</b> Unseen data to evaluate final performance.</li>
+                <li><b>Validation Set:</b> Used to tune hyperparameters.</li>
+            </ul>
+            
+            <h3 style="margin-top:2mm;">k-Fold Cross Validation</h3>
+            <p>Splits data into 'k' chunks. Trains on k-1, tests on the 1 remaining. Repeats k times. Averages the scores. More robust than a single split.</p>
+            <div class="code-block">
+                <div class="code-title">Python (Scikit-Learn)</div>
+                from sklearn.model_selection import train_test_split<br>
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+            </div>
+        </div>
+
+        <div class="panel border-pink" style="grid-column: span 2;">
+            <h3>Classification: The Confusion Matrix</h3>
+            <p>Compares Actual Truth vs. Model Prediction for binary classification.</p>
+            
+            <div class="grid-col-2" style="gap: 4mm;">
+                <table class="cm-table">
+                    <tr>
+                        <th colspan="2" rowspan="2" style="background:transparent; border:none;"></th>
+                        <th colspan="2" style="text-align:center;">Predicted Condition</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align:center;">Pred Positive (1)</th>
+                        <th style="text-align:center;">Pred Negative (0)</th>
+                    </tr>
+                    <tr>
+                        <th rowspan="2" style="writing-mode: vertical-rl; transform: rotate(180deg); text-align:center;">Actual</th>
+                        <th>Pos (1)</th>
+                        <td class="cm-tp">True Positive<br>(TP)</td>
+                        <td class="cm-fn">False Negative<br>(FN) - Type II Error</td>
+                    </tr>
+                    <tr>
+                        <th>Neg (0)</th>
+                        <td class="cm-fp">False Positive<br>(FP) - Type I Error</td>
+                        <td class="cm-tn">True Negative<br>(TN)</td>
+                    </tr>
+                </table>
+                
+                <div>
+                    <b>Imbalanced Data Warning:</b>
+                    <p>If 99% of emails are normal and 1% is spam, a model predicting "normal" every time has 99% accuracy but is completely useless. Do not use Accuracy for imbalanced data!</p>
+                    <b>Fixes:</b> SMOTE (Oversampling), Undersampling, Class Weights.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid-col-3" style="margin-top: 4mm; gap: 4mm;">
+        <div class="panel border-green">
+            <h3>Evaluation Metrics</h3>
+            <ul style="font-family: 'JetBrains Mono'; font-size: 8pt; line-height: 1.8;">
+                <li><b>Accuracy:</b> (TP+TN) / Total<br><span style="color:var(--gray); font-size:7pt;">Overall correctness (Bad for imbalanced)</span></li>
+                
+                <li><b>Precision:</b> TP / (TP + FP)<br><span style="color:var(--gray); font-size:7pt;">When it predicts Yes, how often is it right? (Minimize False Positives)</span></li>
+                
+                <li><b>Recall (Sensitivity):</b> TP / (TP + FN)<br><span style="color:var(--gray); font-size:7pt;">Out of all actual Yes, how many did we find? (Minimize False Negatives)</span></li>
+                
+                <li><b>F1-Score:</b> 2 * (Prec * Rec) / (Prec + Rec)<br><span style="color:var(--gray); font-size:7pt;">Harmonic mean of Precision and Recall.</span></li>
+            </ul>
+        </div>
+
+        <div class="panel border-yellow">
+            <h3>ROC Curve & AUC</h3>
+            <p><b>ROC (Receiver Operating Characteristic):</b> Plots True Positive Rate (Recall) vs False Positive Rate across different probability thresholds.</p>
+            <p><b>AUC (Area Under Curve):</b> A single metric evaluating model performance independent of threshold.</p>
+            <ul>
+                <li><b>AUC = 0.5:</b> Useless (Random guessing).</li>
+                <li><b>AUC = 0.7 - 0.8:</b> Acceptable.</li>
+                <li><b>AUC = 0.8 - 0.9:</b> Excellent.</li>
+                <li><b>AUC = 1.0:</b> Perfect (Suspicious!).</li>
+            </ul>
+        </div>
+        
+        <div class="panel border-orange" style="background: var(--black); color: var(--paper);">
+            <h3 style="color: var(--orange); border-bottom-color: var(--gray);">⚠️ MACHINE LEARNING TRAPS</h3>
+            <ul style="font-size: 8pt; line-height: 1.5;">
+                <li><span class="tag">TRAP</span> <b>Data Leakage:</b> Scaling or imputing missing values BEFORE train/test split. Always fit scaler on Train only!</li>
+                <li><span class="tag">TRAP</span> <b>Overfitting:</b> 99% train accuracy but 60% test accuracy. The model memorized the noise.</li>
+                <li><span class="tag">TRAP</span> <b>Thresholding:</b> `.predict()` defaults to 0.5 threshold. You might need to change it via `.predict_proba()` to optimize Recall vs Precision.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
