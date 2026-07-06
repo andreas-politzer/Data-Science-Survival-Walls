@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SQLITE SURVIVAL WALL - Andy's Edition v2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00c8ff;
+            --pink: #ff2f92;
+            --green: #00d84a;
+            --yellow: #ffb800;
+            --purple: #9b5cff;
+            --black: #151515;
+            --gray: #333333;
+            --light-bg: #f1f3f5;
+            --paper: #ffffff;
+            --trap-bg: #fff5f6;
+            --trap-border: #ff003c;
+            --mnemonic-bg: #fffdf0;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        @page {
+            size: A3 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            body { 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                background: var(--paper); 
+            }
+            .page { 
+                margin: 4mm 5mm 6mm 5mm !important; 
+                box-shadow: none !important; 
+                page-break-after: always; 
+            }
+            .no-print { display: none !important; }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 9.0pt;
+            line-height: 1.3;
+            color: var(--black);
+            margin: 0;
+            padding: 0;
+            background-color: #d1d5db;
+        }
+
+        .page {
+            background: var(--paper);
+            width: 420mm;
+            height: 297mm;
+            margin: 0 auto 8mm auto;
+            padding: 6mm 8mm;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+            border-bottom: 4px solid var(--black);
+        }
+
+        .header-title {
+            font-family: 'Audiowide', sans-serif;
+            font-size: 22pt;
+            letter-spacing: 0.5px;
+            color: var(--black);
+            padding-bottom: 2px;
+        }
+
+        .header-edition {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 12pt;
+            text-align: right;
+            color: var(--pink);
+            letter-spacing: 2px;
+        }
+
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-bottom: 4px;
+        }
+
+        .grid-col {
+            padding: 4px 5px;
+            vertical-align: top;
+            width: 33.333%;
+        }
+
+        .panel {
+            background: var(--paper);
+            border: 2px solid var(--black);
+            height: 100%;
+            box-shadow: 3.5px 3.5px 0px var(--black);
+        }
+
+        .panel.cyan { border-top: 5px solid var(--cyan); }
+        .panel.pink { border-top: 5px solid var(--pink); }
+        .panel.green { border-top: 5px solid var(--green); }
+        .panel.yellow { border-top: 5px solid var(--yellow); }
+        .panel.purple { border-top: 5px solid var(--purple); }
+
+        .panel h2 {
+            background: var(--black);
+            color: var(--paper);
+            margin: 0;
+            padding: 3px 6px;
+            font-size: 9.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .panel-content { padding: 5px 7px; }
+
+        pre {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 7.8pt;
+            font-weight: 700;
+            background-color: var(--black) !important;
+            color: #f8f8f2;
+            padding: 6px;
+            margin: 4px 0;
+            border: 1px solid var(--black);
+            white-space: pre-wrap;
+            line-height: 1.25;
+        }
+
+        code {
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 700;
+            background-color: var(--black);
+            color: var(--cyan);
+            padding: 1px 2px;
+            font-size: 8.2pt;
+        }
+
+        .c-pink { color: var(--pink) !important; }
+        .c-green { color: var(--green) !important; }
+        .c-yellow { color: var(--yellow) !important; }
+        .c-cyan { color: var(--cyan) !important; }
+        .c-purple { color: var(--purple) !important; }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 4px 0;
+            font-size: 8.0pt;
+        }
+
+        .matrix-table th {
+            background-color: var(--black);
+            color: var(--paper);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-align: left;
+            padding: 3px 5px;
+            border: 1px solid var(--black);
+            text-transform: uppercase;
+            font-size: 7.5pt;
+        }
+
+        .matrix-table td {
+            padding: 3px 5px;
+            border: 1px solid #cccccc;
+            vertical-align: top;
+            line-height: 1.2;
+        }
+
+        .matrix-table tr:nth-child(even) { background-color: var(--light-bg); }
+
+        .trap-box {
+            background-color: var(--trap-bg);
+            border: 1px dashed var(--trap-border);
+            border-left: 5px solid var(--trap-border);
+            padding: 4px 6px;
+            margin: 4px 0;
+            font-size: 8.2pt;
+            line-height: 1.25;
+        }
+
+        .trap-box b {
+            color: var(--trap-border);
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8.5pt;
+            display: block;
+        }
+
+        .mnemonic-box {
+            background-color: var(--mnemonic-bg);
+            border: 1px dashed var(--yellow);
+            border-left: 5px solid var(--yellow);
+            padding: 4px 6px;
+            margin: 4px 0;
+            font-size: 8.2pt;
+            line-height: 1.25;
+        }
+
+        .mnemonic-box b {
+            color: #b58100;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8.5pt;
+            display: block;
+        }
+
+        .black-panel {
+            background: var(--black);
+            color: var(--paper);
+            border: 2px solid var(--black);
+            margin-top: 4px;
+            box-shadow: 3.5px 3.5px 0px var(--pink);
+        }
+        
+        .black-panel h2 {
+            background: var(--pink);
+            color: var(--black);
+            margin: 0;
+            padding: 4px 6px;
+            font-size: 10.5pt;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .black-panel table { width: 100%; border-collapse: collapse; }
+        .black-panel td { vertical-align: top; padding: 4px 6px; font-size: 8.5pt; line-height: 1.3;}
+        .black-panel b { color: var(--cyan); font-family: 'JetBrains Mono', monospace; text-transform: uppercase;}
+    </style>
+</head>
+<body>
+
+    <div class="no-print" style="max-width: 420mm; margin: 3mm auto 0 auto; padding: 0 5mm;">
+        <a href="index.html" style="font-family: 'Orbitron', sans-serif; font-size: 9pt; text-decoration: none; color: var(--cyan); font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+            <span>⟵</span> BACK TO COMMAND CENTER
+        </a>
+    </div>
+
+    <div class="page">
+        <table class="header-table">
+            <tr>
+                <td class="header-title">SQLITE SURVIVAL WALL [DATA RETRIEVAL & DEEP ANALYTICS]</td>
+                <td class="header-edition">ANDY'S EDITION V2.0 // HYBRID 3x3 MATRIX SYSTEM // PAGE 1</td>
+            </tr>
+        </table>
+
+        <table class="grid-table">
+            <tr>
+                <td class="grid-col">
+                    <div class="panel cyan">
+                        <h2>1. Core Pipeline Logical Order of Execution</h2>
+                        <div class="panel-content">
+                            <pre><span class="c-pink">PARSING LIFECYCLE (Engine Execution Path)</span>
+├── <span class="c-cyan">1. FROM & JOIN</span>    &rarr; Targets disks, creates virtual row space
+├── <span class="c-cyan">2. WHERE</span>          &rarr; Line scan row filter. Skips unmatching inputs
+├── <span class="c-yellow">3. GROUP BY</span>       &rarr; Collapses arrays into distinct key hash buckets
+├── <span class="c-yellow">4. HAVING</span>         &rarr; Filters bucket groupings via aggregate metrics
+├── <span class="c-green">5. SELECT</span>         &rarr; Runs projection, processes math & Window Functions
+├── <span class="c-green">6. DISTINCT</span>       &rarr; Instantiates memory sweep to purge duplicate rows
+├── <span class="c-purple">7. ORDER BY</span>       &rarr; Performs final sort pass on outputs (ASC/DESC)
+└── <span class="c-purple">8. LIMIT / OFFSET</span> &rarr; Truncates output matrix viewport frames</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel pink">
+                        <h2>2. Deeply Nested Subqueries & Sub-Sub-Subqueries</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Multi-Level Uncorrelated & Correlated Nesting Framework:</p>
+                            <pre><span class="c-green">-- Fetching entities based on multi-stage conditions from separate schemas</span>
+<span class="c-pink">SELECT</span> manager_name, country <span class="c-pink">FROM</span> retailers <span class="c-pink">WHERE</span> id <span class="c-pink">IN</span> (
+    <span class="c-pink">SELECT</span> retailer_id <span class="c-pink">FROM</span> goexplore_sales <span class="c-pink">WHERE</span> revenue_per_capita &gt; (
+        <span class="c-pink">SELECT</span> <span class="c-cyan">AVG</span>(sub_rev) <span class="c-pink">FROM</span> (
+            <span class="c-pink">SELECT</span> revenue_per_capita <span class="c-pink">AS</span> sub_rev <span class="c-pink">FROM</span> external_ingest
+            <span class="c-pink">WHERE</span> status_flag = (
+                <span class="c-pink">SELECT</span> config_val <span class="c-pink">FROM</span> system_parameters <span class="c-pink">WHERE</span> key = 'active_tier'
+            )
+        )
+    )
+);</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>3. Window Functions & Analytical Partitioning</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Compute aggregations across subsets without collapsing underlying rows:</p>
+                            <pre><span class="c-pink">SELECT</span> date, country, revenue,
+    <span class="c-cyan">ROW_NUMBER</span>() <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> tracking_seq,
+    <span class="c-cyan">SUM</span>(revenue) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> cumulative_running_total,
+    <span class="c-cyan">AVG</span>(revenue) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> partitioned_average_revenue
+<span class="c-pink">FROM</span> dynamic_market_stream
+<span class="c-purple">WINDOW</span> w <span class="c-pink">AS</span> (<span class="c-pink">PARTITION BY</span> country <span class="c-pink">ORDER BY</span> date);</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="grid-col">
+                    <div class="panel yellow">
+                        <h2>4. Matrix Pivoting Architecture</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Cross-Tab Transformation via Conditional Aggregations (Rows to Columns):</p>
+                            <pre><span class="c-pink">SELECT</span> product_type,
+    <span class="c-cyan">ROUND</span>(<span class="c-cyan">SUM</span>(<span class="c-pink">CASE WHEN</span> country = 'Germany' <span class="c-pink">THEN</span> revenue <span class="c-pink">ELSE</span> 0 <span class="c-pink">END</span>), 2) <span class="c-pink">AS</span> rev_de,
+    <span class="c-cyan">ROUND</span>(<span class="c-cyan">SUM</span>(<span class="c-pink">CASE WHEN</span> country = 'Norway'  <span class="c-pink">THEN</span> revenue <span class="c-pink">ELSE</span> 0 <span class="c-pink">END</span>), 2) <span class="c-pink">AS</span> rev_no,
+    <span class="c-cyan">ROUND</span>(<span class="c-cyan">SUM</span>(<span class="c-pink">CASE WHEN</span> country = 'USA'     <span class="c-pink">THEN</span> revenue <span class="c-pink">ELSE</span> 0 <span class="c-pink">END</span>), 2) <span class="c-pink">AS</span> rev_us
+<span class="c-pink">FROM</span> sales_source_data 
+<span class="c-pink">GROUP BY</span> product_type;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>5. Matrix Unpivoting Blueprint</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Reconstruct Column Fields back into Normalized Records (Columns to Rows):</p>
+                            <pre><span class="c-pink">SELECT</span> product_type, 'Germany' <span class="c-pink">AS</span> country, rev_de <span class="c-pink">AS</span> revenue <span class="c-pink">FROM</span> pivoted_sales
+<span class="c-purple">UNION ALL</span>
+<span class="c-pink">SELECT</span> product_type, 'Norway'  <span class="c-pink">AS</span> country, rev_no <span class="c-pink">AS</span> revenue <span class="c-pink">FROM</span> pivoted_sales
+<span class="c-purple">UNION ALL</span>
+<span class="c-pink">SELECT</span> product_type, 'USA'     <span class="c-pink">AS</span> country, rev_us <span class="c-pink">AS</span> revenue <span class="c-pink">FROM</span> pivoted_sales;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel cyan">
+                        <h2>6. Advanced Window Framing Bounds</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Moving Averages, Lag & Lead Offset Analytics over explicit window frames:</p>
+                            <pre><span class="c-pink">SELECT</span> date, revenue,
+    <span class="c-cyan">LAG</span>(revenue, 1, 0.0) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> day_minus_1_rev,
+    <span class="c-cyan">LEAD</span>(revenue, 1) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> day_plus_1_rev,
+    <span class="c-cyan">AVG</span>(revenue) <span class="c-pink">OVER</span> (
+        <span class="c-pink">PARTITION BY</span> country <span class="c-pink">ORDER BY</span> date
+        <span class="c-purple">ROWS BETWEEN 2 PRECEDING AND CURRENT ROW</span>
+    ) <span class="c-pink">AS</span> rolling_3day_avg
+<span class="c-pink">FROM</span> sales_stream
+<span class="c-purple">WINDOW</span> w <span class="c-pink">AS</span> (<span class="c-pink">PARTITION BY</span> country <span class="c-pink">ORDER BY</span> date);</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>7. Advanced Relational Self-Joins</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Mapping record vectors side-by-side within a single table entity:</p>
+                            <pre><span class="c-green">-- Discover identical sales transactions recorded under distinct IDs</span>
+<span class="c-pink">SELECT</span> a.order_id, a.country, a.revenue, b.order_id <span class="c-pink">AS</span> duplicate_match_id
+<span class="c-pink">FROM</span> goexplore_sales a
+<span class="c-pink">INNER JOIN</span> goexplore_sales b <span class="c-pink">ON</span> a.country = b.country 
+    <span class="c-pink">AND</span> a.revenue = b.revenue <span class="c-pink">AND</span> a.order_id &lt;&gt; b.order_id;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel cyan">
+                        <h2>8. Anti-Join Matrices & Set Operations</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Isolating query inequalities with high-performance execution blocks:</p>
+                            <pre><span class="c-pink">SELECT</span> s.* <span class="c-pink">FROM</span> daily_sales s <span class="c-pink">WHERE</span> <span class="c-pink">NOT EXISTS</span> (
+    <span class="c-pink">SELECT</span> 1 <span class="c-pink">FROM</span> excluded_retailers e <span class="c-pink">WHERE</span> e.id = s.retailer_id
+);
+<span class="c-green">-- Vertical set unions mapping records directly</span>
+<span class="c-pink">SELECT</span> city <span class="c-pink">FROM</span> hubs <span class="c-purple">UNION ALL</span> <span class="c-pink">SELECT</span> city <span class="c-pink">FROM</span> clients;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel pink">
+                        <h2>9. Compound Aggregates & Null Coalescing</h2>
+                        <div class="panel-content">
+                            <pre><span class="c-pink">SELECT</span> product_type,
+    <span class="c-cyan">COUNT</span>(order_id) <span class="c-pink">AS</span> total_raw_rows,
+    <span class="c-cyan">COUNT</span>(<span class="c-pink">DISTINCT</span> client_id) <span class="c-pink">AS</span> unique_buyers,
+    <span class="c-cyan">SUM</span>(<span class="c-cyan">COALESCE</span>(revenue, 0.0)) <span class="c-pink">AS</span> clean_revenue
+<span class="c-pink">FROM</span> staging_ingest
+<span class="c-pink">GROUP BY</span> product_type <span class="c-pink">HAVING</span> clean_revenue &gt; 10000.00;</pre>
+                            <table class="matrix-table">
+                                <thead>
+                                    <tr><th>Ranking Function</th><th>Tie Behavior</th><th>Sequence Map</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><code>ROW_NUMBER()</code></td><td>Ignores ties completely.</td><td>1, 2, 3, 4</td></tr>
+                                    <tr><td><code>RANK()</code></td><td>Matches index, skips rows.</td><td>1, 2, 2, 4</td></tr>
+                                    <tr><td><code>DENSE_RANK()</code></td><td>Matches index, tight sequence.</td><td>1, 2, 2, 3</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="black-panel">
+            <h2>🚨 MASTER LOG: RETRIEVAL CHECKLIST & LOGICAL PHASING LAWS</h2>
+            <div class="panel-content">
+                <table>
+                    <tr>
+                        <td>• <b>Filter Phasing Rules:</b> <code>WHERE</code> cleans memory allocations before group mapping patterns run. <code>HAVING</code> filters exclusively post-aggregation arrays.</td>
+                        <td>• <b>The Window Restriction:</b> Window mappings instantiate inside the <code>SELECT</code> processing step; you cannot filter window outputs inside the same query block using <code>WHERE</code>. (Use a CTE).</td>
+                        <td>• <b>Boolean Priorities:</b> Operators evaluate sequentially. <code>AND</code> completely outranks <code>OR</code>. Protect query integrity by enclosing conditions inside parenthesis.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <table class="header-table">
+            <tr>
+                <td class="header-title">SQLITE SURVIVAL WALL [DML STATE MUTATIONS & TRANSACTION PIPELINES]</td>
+                <td class="header-edition">ANDY'S EDITION V2.0 // HYBRID 3x3 MATRIX SYSTEM // PAGE 2</td>
+            </tr>
+        </table>
+
+        <table class="grid-table">
+            <tr>
+                <td class="grid-col">
+                    <div class="panel pink">
+                        <h2>1. INSERT INTO – Data Population Layouts</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Explicit Column Strategy vs Positional Arrays:</p>
+                            <pre><span class="c-green">-- Safe production standard column mapping declaration</span>
+<span class="c-pink">INSERT INTO</span> branch_registry (branch_id, city, country) 
+<span class="c-pink">VALUES</span> (401, 'Hamburg-Eilbek', 'Germany');
+
+<span class="c-green">-- Bulk positional array acceleration map</span>
+<span class="c-pink">INSERT INTO</span> branch_registry <span class="c-pink">VALUES</span> (402, 'Berlin', 'Germany');</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel yellow">
+                        <h2>2. UPDATE – Modifying Active State Records</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Multivariable Safe Explicit Constraints Overrides:</p>
+                            <pre><span class="c-pink">UPDATE</span> goexplore_sales
+<span class="c-pink">SET</span> 
+    revenue_per_capita = 472.40,
+    currency_code = 'EUR',
+    system_last_updated = <span class="c-cyan">strftime</span>('%Y-%m-%d %H:%M:%S', 'now')
+<span class="c-pink">WHERE</span> country = 'United States' 
+  <span class="c-pink">AND</span> product_type = 'Climbing Equipment';</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>3. DELETE FROM – Target Row Discarding</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Selective Database Row Dropping under Criteria Gates:</p>
+                            <pre><span class="c-pink">DELETE FROM</span> session_analytics_logs 
+<span class="c-pink">WHERE</span> tracking_date &lt; <span class="c-cyan">date</span>('now', '-30 days')
+  <span class="c-pink">AND</span> status_flag = 'Expired';</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>4. Bulk Dataset ETL Ingestion Pipelines</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Migrating, Formatting and Transforming Live Inputs (INSERT INTO...SELECT):</p>
+                            <pre><span class="c-pink">INSERT INTO</span> product_performance_report (reporting_year, segment, gross_sales)
+<span class="c-pink">SELECT</span> year, product_type, <span class="c-cyan">SUM</span>(revenue) 
+<span class="c-pink">FROM</span> staging_raw_ingest
+<span class="c-pink">WHERE</span> tracking_status = 'Verified'
+<span class="c-pink">GROUP BY</span> year, product_type;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel cyan">
+                        <h2>5. Correlated Multi-Table Updates</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Updating Records inside Table A using the values of Table B (SQLite Loop):</p>
+                            <pre><span class="c-pink">UPDATE</span> client_stores
+<span class="c-pink">SET</span> operations_manager = (
+    <span class="c-pink">SELECT</span> m.manager_name <span class="c-pink">FROM</span> master_regions m 
+    <span class="c-pink">WHERE</span> m.postal_code = client_stores.zip_code
+)
+<span class="c-pink">WHERE EXISTS</span> (
+    <span class="c-pink">SELECT</span> 1 <span class="c-pink">FROM</span> master_regions m 
+    <span class="c-pink">WHERE</span> m.postal_code = client_stores.zip_code
+);</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel pink">
+                        <h2>6. Modern Idempotent UPSERT Protocols</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Handling Constraints Conflict Anomalies Dynamically on Primary Key Clashes:</p>
+                            <pre><span class="c-pink">INSERT INTO</span> warehouse_inventory (sku, stock_count) 
+<span class="c-pink">VALUES</span> ('CLMB-ACC-SG', 15)
+<span class="c-pink">ON CONFLICT</span>(sku) 
+<span class="c-pink">DO UPDATE SET</span> stock_count = stock_count + <span class="c-purple">excluded</span>.stock_count;</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="grid-col">
+                    <div class="panel yellow">
+                        <h2>7. Temporary Tables & Session Staging Spaces</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Isolating Transient Scratchpad Datasets inside RAM/Local Disks:</p>
+                            <pre><span class="c-pink">CREATE TEMPORARY TABLE</span> temp_sales_matrix (
+    session_id <span class="c-yellow">TEXT</span> <span class="c-pink">PRIMARY KEY</span>,
+    calculated_delta <span class="c-yellow">REAL</span>
+);
+<span class="c-pink">INSERT INTO</span> temp_sales_matrix 
+<span class="c-pink">SELECT</span> token, (revenue - 100) <span class="c-pink">FROM</span> live_stream;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>8. Trigger Automation Workarounds</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Automating System Side-Effects & Audit Trails within SQLite Pipelines:</p>
+                            <pre><span class="c-pink">CREATE TRIGGER</span> trg_audit_sales_insert
+<span class="c-pink">AFTER INSERT ON</span> goexplore_sales
+<span class="c-pink">BEGIN</span>
+    <span class="c-pink">INSERT INTO</span> system_audit_logs(event_type, table_target, row_key, timestamp)
+    <span class="c-pink">VALUES</span> ('INSERT', 'goexplore_sales', <span class="c-purple">NEW</span>.order_id, <span class="c-cyan">datetime</span>('now'));
+<span class="c-pink">END</span>;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>9. Enterprise Stored Procedures Specs</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Multi-Statement Procedural Blocks Block Blueprint (PostgreSQL/BigQuery Reference):</p>
+                            <pre><span class="c-pink">CREATE PROCEDURE</span> execute_transfer(sender <span class="c-yellow">INT</span>, receiver <span class="c-yellow">INT</span>, val <span class="c-yellow">NUMERIC</span>)
+<span class="c-pink">LANGUAGE</span> plpgsql <span class="c-pink">AS</span> $$
+<span class="c-pink">BEGIN</span>
+    <span class="c-pink">UPDATE</span> accounts <span class="c-pink">SET</span> cash = cash - val <span class="c-pink">WHERE</span> id = sender;
+    <span class="c-pink">UPDATE</span> accounts <span class="c-pink">SET</span> cash = cash + val <span class="c-pink">WHERE</span> id = receiver;
+    <span class="c-pink">COMMIT</span>;
+<span class="c-pink">END</span>; $$;</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="black-panel">
+            <h2>🚨 TRANSACTION JOURNAL: CORRUPT STATE GUARDRAILS & FILE-LOCK PROTOCOLS</h2>
+            <div class="panel-content">
+                <table>
+                    <tr>
+                        <td>• <b>Global Overwrite Warnings:</b> Running an <code>UPDATE</code> or <code>DELETE</code> statement without appending explicit <code>WHERE</code> parameters mutates every structural record. Validate footprints using <code>SELECT COUNT(*)</code> maps first.</td>
+                        <td>• <b>ACID State Controls:</b> Wrap sensitive code modifications inside safe active runtime boundaries: <code>BEGIN TRANSACTION;</code> &rarr; verify row alteration readouts &rarr; call <code>COMMIT;</code> (or execute <code>ROLLBACK;</code> on faults).</td>
+                        <td>• <b>The Deadlock Threat:</b> SQLite locks the physical data file during active writing states. Unfinished open transaction boundaries started in Python/VS-Code freeze DBeaver processes.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <table class="header-table">
+            <tr>
+                <td class="header-title">SQLITE SURVIVAL WALL [DDL SCHEMA LAYOUT & ENGINE PERFORMANCE]</td>
+                <td class="header-edition">ANDY'S EDITION V2.0 // HYBRID 3x3 MATRIX SYSTEM // PAGE 3</td>
+            </tr>
+        </table>
+
+        <table class="grid-table">
+            <tr>
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>1. CREATE TABLE Schema Geometry & Core Constraints</h2>
+                        <div class="panel-content">
+                            <pre><span class="c-pink">CREATE TABLE</span> enterprise_nodes (
+    node_id <span class="c-yellow">INTEGER</span> <span class="c-pink">PRIMARY KEY</span> <span class="c-purple">AUTOINCREMENT</span>,
+    node_hash <span class="c-yellow">TEXT</span> <span class="c-pink">UNIQUE</span> <span class="c-pink">NOT NULL</span>,
+    location_tier <span class="c-yellow">TEXT</span> <span class="c-pink">DEFAULT</span> 'HQ-Hamburg',
+    budget_allocation <span class="c-yellow">REAL</span>,
+    parent_id <span class="c-yellow">INTEGER</span>,
+    
+    <span class="c-pink">CONSTRAINT</span> chk_min_allocation <span class="c-pink">CHECK</span> (budget_allocation &gt;= 0.0),
+    <span class="c-pink">FOREIGN KEY</span> (parent_id) <span class="c-pink">REFERENCES</span> conglomerates (id) 
+        <span class="c-pink">ON DELETE CASCADE</span>
+);</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>2. SQLite Type Affinity System</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Dynamic Engine Allocation & Physical Storage Profiles Mapping Matrices:</p>
+                            <table class="matrix-table">
+                                <thead>
+                                    <tr><th>Affinity</th><th>Storage Profile Space</th><th>Valid Type Keywords</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><code>INTEGER</code></td><td>Signed integers up to 8 bytes</td><td>INT, BIGINT, TINYINT, SMALLINT, BOOLEAN</td></tr>
+                                    <tr><td><code>REAL</code></td><td>8-Byte IEEE float variables</td><td>REAL, FLOAT, DOUBLE, DOUBLE PRECISION</td></tr>
+                                    <tr><td><code>TEXT</code></td><td>Character sequences (UTF-8/16)</td><td>VARCHAR, CHAR, TEXT, CLOB, DATE, DATETIME</td></tr>
+                                    <tr><td><code>BLOB</code></td><td>Raw unparsed byte fields</td><td>BLOB, BINARY (Images, object arrays)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel yellow">
+                        <h2>3. ALTER TABLE Schema Evolution Limitations</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Native System Column Modifications & Table Structural Alterations:</p>
+                            <pre><span class="c-green">-- Append fresh column fields onto an active production structure</span>
+<span class="c-pink">ALTER TABLE</span> enterprise_nodes <span class="c-pink">ADD COLUMN</span> routing_index <span class="c-yellow">TEXT</span>;
+
+<span class="c-green">-- Rename physical disk objects inside the database dictionary</span>
+<span class="c-pink">ALTER TABLE</span> enterprise_nodes <span class="c-pink">RENAME TO</span> active_nodes_v2;</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>4. The Shadow Table Cloning Workaround</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Overriding SQLite Constraints Altering Constraints & Dropping Attributes:</p>
+                            <pre><span class="c-pink">CREATE TABLE</span> nodes_shadow (id <span class="c-yellow">INTEGER</span> <span class="c-pink">PRIMARY KEY</span>, hash <span class="c-yellow">TEXT</span>, cash <span class="c-yellow">REAL</span>);
+<span class="c-pink">INSERT INTO</span> nodes_shadow(id, hash, cash) 
+<span class="c-pink">SELECT</span> node_id, node_hash, budget_allocation <span class="c-pink">FROM</span> active_nodes_v2;
+<span class="c-pink">DROP TABLE</span> active_nodes_v2;
+<span class="c-pink">ALTER TABLE</span> nodes_shadow <span class="c-pink">RENAME TO</span> enterprise_nodes;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel yellow">
+                        <h2>5. Virtual Data View Architecture</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Decoupling Application Layers via Stored Abstract Data Compilations:</p>
+                            <pre><span class="c-green">-- Virtual view layers cache the logical query definition instead of data strings</span>
+<span class="c-pink">CREATE VIEW</span> v_hamburg_premium_hubs <span class="c-pink">AS</span>
+<span class="c-pink">SELECT</span> node_hash, budget_allocation <span class="c-pink">FROM</span> enterprise_nodes 
+<span class="c-pink">WHERE</span> location_tier = 'HQ-Hamburg' <span class="c-pink">AND</span> budget_allocation &gt; 75000.00;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel cyan">
+                        <h2>6. Recursive CTE Matrix Engines</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Generating Time-Series Ranges and Hierarchical Loops from scratch via SQL:</p>
+                            <pre><span class="c-pink">WITH RECURSIVE</span> tracking_calendar(calendar_day) <span class="c-pink">AS</span> (
+    <span class="c-pink">SELECT</span> <span class="c-cyan">date</span>('2015-01-12') <span class="c-green">-- Anchor Member initialization point</span>
+    <span class="c-pink">UNION ALL</span>
+    <span class="c-pink">SELECT</span> <span class="c-cyan">date</span>(calendar_day, '+1 day') <span class="c-pink">FROM</span> tracking_calendar 
+    <span class="c-pink">LIMIT</span> 42 <span class="c-green">-- Loop hard gate boundary termination constraint</span>
+)
+<span class="c-pink">SELECT</span> calendar_day <span class="c-pink">FROM</span> tracking_calendar;</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="grid-col">
+                    <div class="panel cyan">
+                        <h2>7. Multi-Column & Covering Indexes</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Accelerating DBeaver Query Speeds across Compound Key Filters:</p>
+                            <pre><span class="c-green">-- Optimizes query scanning routines targeting twin properties concurrently</span>
+<span class="c-pink">CREATE INDEX</span> idx_node_loc_budget <span class="c-pink">ON</span> enterprise_nodes (location_tier, budget_allocation);
+<span class="c-green">-- Partial conditional index optimization footprint mapping</span>
+<span class="c-pink">CREATE INDEX</span> idx_prem_active <span class="c-pink">ON</span> enterprise_nodes (budget_allocation) <span class="c-pink">WHERE</span> operational_status=1;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel purple">
+                        <h2>8. EXPLAIN QUERY PLAN Diagnostics</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Prefix strings inside DBeaver consoles to trace algorithmic execution paths:</p>
+                            <pre><span class="c-pink">EXPLAIN QUERY PLAN</span> 
+<span class="c-pink">SELECT</span> c.manager_name, <span class="c-cyan">SUM</span>(s.revenue) 
+<span class="c-pink">FROM</span> goexplore_sales s 
+<span class="c-pink">JOIN</span> retailers c <span class="c-pink">ON</span> s.retailer_id = c.id 
+<span class="c-pink">WHERE</span> s.country = 'Germany' <span class="c-pink">GROUP BY</span> c.manager_name;</pre>
+                        </div>
+                    </div>
+                </td>
+                <td class="grid-col">
+                    <div class="panel green">
+                        <h2>9. Pragma Engine Configuration Tuning</h2>
+                        <div class="panel-content">
+                            <p style="margin:0; font-weight:bold;">Modify Core Database Engine Parameters directly from your Script Console:</p>
+                            <pre><span class="c-green">-- Explicitly switch on foreign key cascade constraint checking checks</span>
+<span class="c-pink">PRAGMA</span> foreign_keys = <span class="c-purple">ON</span>;
+<span class="c-green">-- Memory cache tuning parameters adjustment optimization pass</span>
+<span class="c-pink">PRAGMA</span> cache_size = -64000; <span class="c-green">-- Involves mapping temporary buffers to RAM</span>
+<span class="c-pink">PRAGMA</span> synchronous = <span class="c-purple">OFF</span>;</pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="black-panel">
+            <h2>🚨 TUNING PROTOCOLS: CORE B-TREE RUNTIME DIAGNOSTICS & VIEW INHERITANCE</h2>
+            <div class="panel-content">
+                <table>
+                    <tr>
+                        <td>• <b>Query Plan Scans:</b> If execution paths display <code>SCAN TABLE</code> logs, the engine runs row-by-row memory searches. Optimized pipelines must target <code>SEARCH TABLE ... USING INDEX</code> routes instead!</td>
+                        <td>• <b>The Write Penalty:</b> Appending indexing nodes accelerates <code>WHERE</code> and <code>JOIN ON</code> matching significantly. However, it slows down all <code>INSERT</code> loops as B-Tree structures recalculate.</td>
+                        <td>• <b>View Inheritance traps:</b> Views are completely virtual and persist zero row blocks on physical disks. Utilizing nested views inside massive join pipelines causes the compilation parser tree to collapse into recursive evaluation overloads.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
