@@ -1,748 +1,497 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>SQLITE SURVIVAL WALL - Andy's Edition v2.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --cyan: #00c8ff;
-            --pink: #ff2f92;
-            --green: #00d84a;
-            --yellow: #ffb800;
-            --purple: #9b5cff;
-            --black: #151515;
-            --gray: #333333;
-            --light-bg: #f1f3f5;
-            --paper: #ffffff;
-            --trap-bg: #fff5f6;
-            --trap-border: #ff003c;
-            --mnemonic-bg: #fffdf0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andy's Data Science Survival Walls</title>
+<meta name="description" content="Andreas Politzer - Data Science, Statistics and Terminal Survival Walls. High-density field references for developers and data scientists.">
+<meta name="keywords" content="Andreas Politzer, GitHub, Data Science, Statistics, Cheat Sheet, Terminal, Bash, Git, WBS Coding School">
+<meta name="author" content="Andreas Politzer">
+<meta name="google-site-verification" content="_sxipUUKLrbMqMI__lVe_0YO-8qi8iR9AaqkglAjB84" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&family=Audiowide&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #0a0a0f;
+    --grid: rgba(0, 180, 100, 0.04);
+    --green: #00b300;
+    --green-bright: #39ff14;
+    --green-dim: #006600;
+    --cyan: #00e5ff;
+    --text: #c8ffc8;
+    --muted: #4a7a4a;
+    --card-bg: rgba(0, 30, 0, 0.6);
+    --card-border: rgba(0, 180, 100, 0.25);
+    --mono: 'JetBrains Mono', monospace;
+  }
 
-        @page {
-            size: A3 landscape;
-            margin: 0;
-        }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
 
-        @media print {
-            body { 
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact; 
-                background: var(--paper); 
-            }
-            .page { 
-                margin: 4mm 5mm 6mm 5mm !important; 
-                box-shadow: none !important; 
-                page-break-after: always; 
-            }
-            .no-print { display: none !important; }
-        }
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 9.0pt;
-            line-height: 1.3;
-            color: var(--black);
-            margin: 0;
-            padding: 0;
-            background-color: #d1d5db;
-        }
+  /* Phosphor glow vignette */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+    z-index: 9;
+  }
 
-        .page {
-            background: var(--paper);
-            width: 420mm;
-            height: 297mm;
-            margin: 0 auto 8mm auto;
-            padding: 6mm 8mm;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.15);
-        }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
 
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 6px;
-            border-bottom: 4px solid var(--black);
-        }
+  /* NAV LINK */
+  .github-nav {
+    margin-bottom: 30px;
+  }
 
-        .header-title {
-            font-family: 'Audiowide', sans-serif;
-            font-size: 22pt;
-            letter-spacing: 0.5px;
-            color: var(--black);
-            padding-bottom: 2px;
-        }
+  .github-nav a {
+    font-size: 11px;
+    text-decoration: none;
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
 
-        .header-edition {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 12pt;
-            text-align: right;
-            color: var(--pink);
-            letter-spacing: 2px;
-        }
+  .github-nav a:hover {
+    color: var(--green-bright);
+    text-shadow: 0 0 8px var(--green-bright);
+  }
 
-        .grid-table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            margin-bottom: 4px;
-        }
+  /* HEADER */
+  .header { margin-bottom: 60px; }
 
-        .grid-col {
-            padding: 4px 5px;
-            vertical-align: top;
-            width: 33.333%;
-        }
+  .prompt {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
 
-        .panel {
-            background: var(--paper);
-            border: 2px solid var(--black);
-            height: 100%;
-            box-shadow: 3.5px 3.5px 0px var(--black);
-        }
+  .title {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    color: var(--green-bright);
+    text-shadow:
+      0 0 10px rgba(57,255,20,0.6),
+      0 0 30px rgba(57,255,20,0.3),
+      0 0 60px rgba(57,255,20,0.1);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    animation: flicker 8s infinite;
+  }
 
-        .panel.cyan { border-top: 5px solid var(--cyan); }
-        .panel.pink { border-top: 5px solid var(--pink); }
-        .panel.green { border-top: 5px solid var(--green); }
-        .panel.yellow { border-top: 5px solid var(--yellow); }
-        .panel.purple { border-top: 5px solid var(--purple); }
+  @keyframes flicker {
+    0%, 95%, 97%, 100% { opacity: 1; }
+    96% { opacity: 0.85; }
+    96.5% { opacity: 1; }
+  }
 
-        .panel h2 {
-            background: var(--black);
-            color: var(--paper);
-            margin: 0;
-            padding: 3px 6px;
-            font-size: 9.5pt;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-family: 'Orbitron', sans-serif;
-        }
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+    letter-spacing: 1px;
+  }
 
-        .panel-content { padding: 5px 7px; }
+  .subtitle span { color: var(--green); }
 
-        pre {
-            font-family: "JetBrains Mono", monospace;
-            font-size: 7.8pt;
-            font-weight: 700;
-            background-color: var(--black) !important;
-            color: #f8f8f2;
-            padding: 6px;
-            margin: 4px 0;
-            border: 1px solid var(--black);
-            white-space: pre-wrap;
-            line-height: 1.25;
-        }
+  /* BLINK CURSOR */
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    height: 18px;
+    background: var(--green-bright);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blink 1s step-end infinite;
+    box-shadow: 0 0 8px var(--green-bright);
+  }
 
-        code {
-            font-family: "JetBrains Mono", monospace;
-            font-weight: 700;
-            background-color: var(--black);
-            color: var(--cyan);
-            padding: 1px 2px;
-            font-size: 8.2pt;
-        }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        .c-pink { color: var(--pink) !important; }
-        .c-green { color: var(--green) !important; }
-        .c-yellow { color: var(--yellow) !important; }
-        .c-cyan { color: var(--cyan) !important; }
-        .c-purple { color: var(--purple) !important; }
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+    margin: 32px 0;
+  }
 
-        .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 4px 0;
-            font-size: 8.0pt;
-        }
+  /* CARDS BASE STRUCTURE */
+  .cards { display: grid; gap: 20px; }
 
-        .matrix-table th {
-            background-color: var(--black);
-            color: var(--paper);
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            text-align: left;
-            padding: 3px 5px;
-            border: 1px solid var(--black);
-            text-transform: uppercase;
-            font-size: 7.5pt;
-        }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 28px 32px;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+  }
 
-        .matrix-table td {
-            padding: 3px 5px;
-            border: 1px solid #cccccc;
-            vertical-align: top;
-            line-height: 1.2;
-        }
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green-dim);
+    transition: all 0.25s ease;
+  }
 
-        .matrix-table tr:nth-child(even) { background-color: var(--light-bg); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
 
-        .trap-box {
-            background-color: var(--trap-bg);
-            border: 1px dashed var(--trap-border);
-            border-left: 5px solid var(--trap-border);
-            padding: 4px 6px;
-            margin: 4px 0;
-            font-size: 8.2pt;
-            line-height: 1.25;
-        }
+  .card-num {
+    font-size: 11px;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+    min-width: 32px;
+    transition: color 0.25s ease;
+  }
 
-        .trap-box b {
-            color: var(--trap-border);
-            text-transform: uppercase;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 8.5pt;
-            display: block;
-        }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-bright);
+    text-shadow: 0 0 8px rgba(57,255,20,0.4);
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+  }
 
-        .mnemonic-box {
-            background-color: var(--mnemonic-bg);
-            border: 1px dashed var(--yellow);
-            border-left: 5px solid var(--yellow);
-            padding: 4px 6px;
-            margin: 4px 0;
-            font-size: 8.2pt;
-            line-height: 1.25;
-        }
+  .card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    padding-left: 48px;
+    transition: color 0.25s ease;
+  }
 
-        .mnemonic-box b {
-            color: #b58100;
-            text-transform: uppercase;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 8.5pt;
-            display: block;
-        }
+  .card-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-left: 48px;
+    margin-top: 12px;
+  }
 
-        .black-panel {
-            background: var(--black);
-            color: var(--paper);
-            border: 2px solid var(--black);
-            margin-top: 4px;
-            box-shadow: 3.5px 3.5px 0px var(--pink);
-        }
-        
-        .black-panel h2 {
-            background: var(--pink);
-            color: var(--black);
-            margin: 0;
-            padding: 4px 6px;
-            font-size: 10.5pt;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid var(--green-dim);
+    color: var(--green-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+  }
 
-        .black-panel table { width: 100%; border-collapse: collapse; }
-        .black-panel td { vertical-align: top; padding: 4px 6px; font-size: 8.5pt; line-height: 1.3;}
-        .black-panel b { color: var(--cyan); font-family: 'JetBrains Mono', monospace; text-transform: uppercase;}
-    </style>
+  /* ========================================== */
+  /* INDIVIDUELLES NEON-HOVER MECHANICS        */
+  /* ========================================== */
+
+  /* 01. STATISTICS & MATH -> CYAN GLOW */
+  .card-stats:hover {
+    border-color: rgba(0, 229, 255, 0.5);
+    background: rgba(0, 30, 40, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+  }
+  .card-stats:hover::before { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+  .card-stats:hover .card-title { color: var(--cyan); text-shadow: 0 0 10px rgba(0, 229, 255, 0.6); }
+  .card-stats:hover .card-num { color: var(--cyan); }
+  .card-stats:hover .card-desc { color: #d0f7ff; }
+  .card-stats:hover .tag { border-color: rgba(0, 229, 255, 0.4); color: var(--cyan); }
+
+  /* 02. TERMINAL & BASH -> STABLE GREEN-BRIGHT */
+  .card-terminal:hover {
+    border-color: rgba(57, 255, 20, 0.4);
+    background: rgba(0, 50, 0, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+  }
+  .card-terminal:hover::before { background: var(--green-bright); box-shadow: 0 0 12px var(--green-bright); }
+  .card-terminal:hover .card-title { color: var(--green-bright); text-shadow: 0 0 10px rgba(57, 255, 20, 0.6); }
+  .card-terminal:hover .card-num { color: var(--green-bright); }
+  .card-terminal:hover .card-desc { color: #e2ffe2; }
+  .card-terminal:hover .tag { border-color: rgba(57, 255, 20, 0.4); color: var(--green-bright); }
+
+  /* 03. GIT & GITHUB -> NEONPINK GLOW */
+  .card-git:hover {
+    border-color: rgba(255, 47, 146, 0.5);
+    background: rgba(50, 0, 25, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(255, 47, 146, 0.1);
+  }
+  .card-git:hover::before { background: #ff2f92; box-shadow: 0 0 12px #ff2f92; }
+  .card-git:hover .card-title { color: #ff2f92; text-shadow: 0 0 10px rgba(255, 47, 146, 0.6); }
+  .card-git:hover .card-num { color: #ff2f92; }
+  .card-git:hover .card-desc { color: #fff0f5; }
+  .card-git:hover .tag { border-color: rgba(255, 47, 146, 0.4); color: #ff2f92; }
+
+  /* 04. DATA VISUALIZATION -> NEONGELB GLOW */
+  .card-viz:hover {
+    border-color: rgba(255, 184, 0, 0.5);
+    background: rgba(45, 35, 0, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(255, 184, 0, 0.1);
+  }
+  .card-viz:hover::before { background: #ffb800; box-shadow: 0 0 12px #ffb800; }
+  .card-viz:hover .card-title { color: #ffb800; text-shadow: 0 0 10px rgba(255, 184, 0, 0.6); }
+  .card-viz:hover .card-num { color: #ffb800; }
+  .card-viz:hover .card-desc { color: #fffbeb; }
+  .card-viz:hover .tag { border-color: rgba(255, 184, 0, 0.4); color: #ffb800; }
+
+  /* 05 // PCEP CARD SYSTEM ALIGNMENT */
+  .card-pcep {
+    border-color: var(--green-dim);
+  }
+  .card-pcep:hover {
+    border-color:  	#aaff00 !important;
+    box-shadow: 0 0 15px rgba(255, 47, 146, 0.3);
+  }
+  .card-pcep:hover .card-title {
+    color:  	#aaff00!important;
+  }
+
+  /* 06. SQLITE SURVIVAL WALL -> DEEP NEON BLUE GLOW */
+  .card-sqlite:hover {
+    border-color: rgba(0, 102, 255, 0.6);
+    background: rgba(0, 15, 50, 0.7);
+    transform: translateX(6px);
+    box-shadow: 0 0 15px rgba(0, 102, 255, 0.2);
+  }
+  .card-sqlite:hover::before { background: #0066ff; box-shadow: 0 0 12px #0066ff; }
+  .card-sqlite:hover .card-title { color: #0066ff; text-shadow: 0 0 10px rgba(0, 102, 255, 0.6); }
+  .card-sqlite:hover .card-num { color: #0066ff; }
+  .card-sqlite:hover .card-desc { color: #e6f0ff; }
+  .card-sqlite:hover .tag { border-color: rgba(0, 102, 255, 0.4); color: #0066ff; }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0,180,100,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .footer a {
+    color: var(--green-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer a:hover { color: var(--green); }
+
+  /* SYSTEM STATUS */
+  .status-bar {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 24px;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    margin-right: 6px;
+    box-shadow: 0 0 6px var(--green-bright);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
 </head>
 <body>
+<div class="container">
 
-    <div class="no-print" style="max-width: 420mm; margin: 3mm auto 0 auto; padding: 0 5mm;">
-        <a href="index.html" style="font-family: 'Orbitron', sans-serif; font-size: 9pt; text-decoration: none; color: var(--cyan); font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
-            <span>⟵</span> BACK TO COMMAND CENTER
-        </a>
-    </div>
+  <div class="github-nav">
+    <a href="https://github.com/andreas-politzer">
+      <span>⟵</span> BACK TO GITHUB PROFILE
+    </a>
+  </div>
 
-    <div class="page">
-        <table class="header-table">
-            <tr>
-                <td class="header-title">SQLITE SURVIVAL WALL [DATA RETRIEVAL & DEEP ANALYTICS]</td>
-                <td class="header-edition">ANDY'S EDITION V2.0 // HYBRID 3x3 MATRIX SYSTEM // PAGE 1</td>
-            </tr>
-        </table>
+  <div class="header">
+    <div class="prompt">// SYSTEM READY &nbsp;·&nbsp; WBS DATA SCIENCE BOOTCAMP &nbsp;·&nbsp; BERLIN</div>
+    <h1 class="title">ANDY'S SURVIVAL WALLS<span class="cursor"></span></h1>
+    <p class="subtitle">
+      Field reference for <span>Data Science</span>, <span>Statistics</span> &amp; <span>Terminal Operations</span>.<br>
+      Print on A3. Pin to wall. Never forget the basics.
+    </p>
+  </div>
 
-        <table class="grid-table">
-            <tr>
-                <td class="grid-col">
-                    <div class="panel cyan">
-                        <h2>1. Core Pipeline Logical Order of Execution</h2>
-                        <div class="panel-content">
-                            <pre><span class="c-pink">PARSING LIFECYCLE (Engine Execution Path)</span>
-├── <span class="c-cyan">1. FROM & JOIN</span>    &rarr; Targets disks, creates virtual row space
-├── <span class="c-cyan">2. WHERE</span>          &rarr; Line scan row filter. Skips unmatching inputs
-├── <span class="c-yellow">3. GROUP BY</span>       &rarr; Collapses arrays into distinct key hash buckets
-├── <span class="c-yellow">4. HAVING</span>         &rarr; Filters bucket groupings via aggregate metrics
-├── <span class="c-green">5. SELECT</span>         &rarr; Runs projection, processes math & Window Functions
-├── <span class="c-green">6. DISTINCT</span>       &rarr; Instantiates memory sweep to purge duplicate rows
-├── <span class="c-purple">7. ORDER BY</span>       &rarr; Performs final sort pass on outputs (ASC/DESC)
-└── <span class="c-purple">8. LIMIT / OFFSET</span> &rarr; Truncates output matrix viewport frames</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel pink">
-                        <h2>2. Deeply Nested Subqueries & Sub-Sub-Subqueries</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Multi-Level Uncorrelated & Correlated Nesting Framework:</p>
-                            <pre><span class="c-green">-- Fetching entities based on multi-stage conditions from separate schemas</span>
-<span class="c-pink">SELECT</span> manager_name, country <span class="c-pink">FROM</span> retailers <span class="c-pink">WHERE</span> id <span class="c-pink">IN</span> (
-    <span class="c-pink">SELECT</span> retailer_id <span class="c-pink">FROM</span> goexplore_sales <span class="c-pink">WHERE</span> revenue_per_capita &gt; (
-        <span class="c-pink">SELECT</span> <span class="c-cyan">AVG</span>(sub_rev) <span class="c-pink">FROM</span> (
-            <span class="c-pink">SELECT</span> revenue_per_capita <span class="c-pink">AS</span> sub_rev <span class="c-pink">FROM</span> external_ingest
-            <span class="c-pink">WHERE</span> status_flag = (
-                <span class="c-pink">SELECT</span> config_val <span class="c-pink">FROM</span> system_parameters <span class="c-pink">WHERE</span> key = 'active_tier'
-            )
-        )
-    )
-);</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel purple">
-                        <h2>3. Window Functions & Analytical Partitioning</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Compute aggregations across subsets without collapsing underlying rows:</p>
-                            <pre><span class="c-pink">SELECT</span> date, country, revenue,
-    <span class="c-cyan">ROW_NUMBER</span>() <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> tracking_seq,
-    <span class="c-cyan">SUM</span>(revenue) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> cumulative_running_total,
-    <span class="c-cyan">AVG</span>(revenue) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> partitioned_average_revenue
-<span class="c-pink">FROM</span> dynamic_market_stream
-<span class="c-purple">WINDOW</span> w <span class="c-pink">AS</span> (<span class="c-pink">PARTITION BY</span> country <span class="c-pink">ORDER BY</span> date);</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td class="grid-col">
-                    <div class="panel yellow">
-                        <h2>4. Matrix Pivoting Architecture</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Cross-Tab Transformation via Conditional Aggregations (Rows to Columns):</p>
-                            <pre><span class="c-pink">SELECT</span> product_type,
-    <span class="c-cyan">ROUND</span>(<span class="c-cyan">SUM</span>(<span class="c-pink">CASE WHEN</span> country = 'Germany' <span class="c-pink">THEN</span> revenue <span class="c-pink">ELSE</span> 0 <span class="c-pink">END</span>), 2) <span class="c-pink">AS</span> rev_de,
-    <span class="c-cyan">ROUND</span>(<span class="c-cyan">SUM</span>(<span class="c-pink">CASE WHEN</span> country = 'Norway'  <span class="c-pink">THEN</span> revenue <span class="c-pink">ELSE</span> 0 <span class="c-pink">END</span>), 2) <span class="c-pink">AS</span> rev_no,
-    <span class="c-cyan">ROUND</span>(<span class="c-cyan">SUM</span>(<span class="c-pink">CASE WHEN</span> country = 'USA'     <span class="c-pink">THEN</span> revenue <span class="c-pink">ELSE</span> 0 <span class="c-pink">END</span>), 2) <span class="c-pink">AS</span> rev_us
-<span class="c-pink">FROM</span> sales_source_data 
-<span class="c-pink">GROUP BY</span> product_type;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel green">
-                        <h2>5. Matrix Unpivoting Blueprint</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Reconstruct Column Fields back into Normalized Records (Columns to Rows):</p>
-                            <pre><span class="c-pink">SELECT</span> product_type, 'Germany' <span class="c-pink">AS</span> country, rev_de <span class="c-pink">AS</span> revenue <span class="c-pink">FROM</span> pivoted_sales
-<span class="c-purple">UNION ALL</span>
-<span class="c-pink">SELECT</span> product_type, 'Norway'  <span class="c-pink">AS</span> country, rev_no <span class="c-pink">AS</span> revenue <span class="c-pink">FROM</span> pivoted_sales
-<span class="c-purple">UNION ALL</span>
-<span class="c-pink">SELECT</span> product_type, 'USA'     <span class="c-pink">AS</span> country, rev_us <span class="c-pink">AS</span> revenue <span class="c-pink">FROM</span> pivoted_sales;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel cyan">
-                        <h2>6. Advanced Window Framing Bounds</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Moving Averages, Lag & Lead Offset Analytics over explicit window frames:</p>
-                            <pre><span class="c-pink">SELECT</span> date, revenue,
-    <span class="c-cyan">LAG</span>(revenue, 1, 0.0) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> day_minus_1_rev,
-    <span class="c-cyan">LEAD</span>(revenue, 1) <span class="c-pink">OVER</span> (w) <span class="c-pink">AS</span> day_plus_1_rev,
-    <span class="c-cyan">AVG</span>(revenue) <span class="c-pink">OVER</span> (
-        <span class="c-pink">PARTITION BY</span> country <span class="c-pink">ORDER BY</span> date
-        <span class="c-purple">ROWS BETWEEN 2 PRECEDING AND CURRENT ROW</span>
-    ) <span class="c-pink">AS</span> rolling_3day_avg
-<span class="c-pink">FROM</span> sales_stream
-<span class="c-purple">WINDOW</span> w <span class="c-pink">AS</span> (<span class="c-pink">PARTITION BY</span> country <span class="c-pink">ORDER BY</span> date);</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+  <div class="status-bar">
+    <span><span class="status-dot"></span>SYSTEM ONLINE</span>
+    <span>SHEETS LOADED: 06</span>
+    <span>FORMAT: HTML / PRINT-READY</span>
+  </div>
 
-            <tr>
-                <td class="grid-col">
-                    <div class="panel purple">
-                        <h2>7. Advanced Relational Self-Joins</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Mapping record vectors side-by-side within a single table entity:</p>
-                            <pre><span class="c-green">-- Discover identical sales transactions recorded under distinct IDs</span>
-<span class="c-pink">SELECT</span> a.order_id, a.country, a.revenue, b.order_id <span class="c-pink">AS</span> duplicate_match_id
-<span class="c-pink">FROM</span> goexplore_sales a
-<span class="c-pink">INNER JOIN</span> goexplore_sales b <span class="c-pink">ON</span> a.country = b.country 
-    <span class="c-pink">AND</span> a.revenue = b.revenue <span class="c-pink">AND</span> a.order_id &lt;&gt; b.order_id;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel cyan">
-                        <h2>8. Anti-Join Matrices & Set Operations</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Isolating query inequalities with high-performance execution blocks:</p>
-                            <pre><span class="c-pink">SELECT</span> s.* <span class="c-pink">FROM</span> daily_sales s <span class="c-pink">WHERE</span> <span class="c-pink">NOT EXISTS</span> (
-    <span class="c-pink">SELECT</span> 1 <span class="c-pink">FROM</span> excluded_retailers e <span class="c-pink">WHERE</span> e.id = s.retailer_id
-);
-<span class="c-green">-- Vertical set unions mapping records directly</span>
-<span class="c-pink">SELECT</span> city <span class="c-pink">FROM</span> hubs <span class="c-purple">UNION ALL</span> <span class="c-pink">SELECT</span> city <span class="c-pink">FROM</span> clients;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel pink">
-                        <h2>9. Compound Aggregates & Null Coalescing</h2>
-                        <div class="panel-content">
-                            <pre><span class="c-pink">SELECT</span> product_type,
-    <span class="c-cyan">COUNT</span>(order_id) <span class="c-pink">AS</span> total_raw_rows,
-    <span class="c-cyan">COUNT</span>(<span class="c-pink">DISTINCT</span> client_id) <span class="c-pink">AS</span> unique_buyers,
-    <span class="c-cyan">SUM</span>(<span class="c-cyan">COALESCE</span>(revenue, 0.0)) <span class="c-pink">AS</span> clean_revenue
-<span class="c-pink">FROM</span> staging_ingest
-<span class="c-pink">GROUP BY</span> product_type <span class="c-pink">HAVING</span> clean_revenue &gt; 10000.00;</pre>
-                            <table class="matrix-table">
-                                <thead>
-                                    <tr><th>Ranking Function</th><th>Tie Behavior</th><th>Sequence Map</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td><code>ROW_NUMBER()</code></td><td>Ignores ties completely.</td><td>1, 2, 3, 4</td></tr>
-                                    <tr><td><code>RANK()</code></td><td>Matches index, skips rows.</td><td>1, 2, 2, 4</td></tr>
-                                    <tr><td><code>DENSE_RANK()</code></td><td>Matches index, tight sequence.</td><td>1, 2, 2, 3</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-        
-        <div class="black-panel">
-            <h2>🚨 MASTER LOG: RETRIEVAL CHECKLIST & LOGICAL PHASING LAWS</h2>
-            <div class="panel-content">
-                <table>
-                    <tr>
-                        <td>• <b>Filter Phasing Rules:</b> <code>WHERE</code> cleans memory allocations before group mapping patterns run. <code>HAVING</code> filters exclusively post-aggregation arrays.</td>
-                        <td>• <b>The Window Restriction:</b> Window mappings instantiate inside the <code>SELECT</code> processing step; you cannot filter window outputs inside the same query block using <code>WHERE</code>. (Use a CTE).</td>
-                        <td>• <b>Boolean Priorities:</b> Operators evaluate sequentially. <code>AND</code> completely outranks <code>OR</code>. Protect query integrity by enclosing conditions inside parenthesis.</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
+  <div class="divider"></div>
 
-    <div class="page">
-        <table class="header-table">
-            <tr>
-                <td class="header-title">SQLITE SURVIVAL WALL [DML STATE MUTATIONS & TRANSACTION PIPELINES]</td>
-                <td class="header-edition">ANDY'S EDITION V2.0 // HYBRID 3x3 MATRIX SYSTEM // PAGE 2</td>
-            </tr>
-        </table>
+  <div class="cards">
 
-        <table class="grid-table">
-            <tr>
-                <td class="grid-col">
-                    <div class="panel pink">
-                        <h2>1. INSERT INTO – Data Population Layouts</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Explicit Column Strategy vs Positional Arrays:</p>
-                            <pre><span class="c-green">-- Safe production standard column mapping declaration</span>
-<span class="c-pink">INSERT INTO</span> branch_registry (branch_id, city, country) 
-<span class="c-pink">VALUES</span> (401, 'Hamburg-Eilbek', 'Germany');
+    <a class="card card-stats" href="statistic_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">01 //</span>
+        <span class="card-title">STATISTICS SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Hypothesis testing · t-Tests · Chi-Square · ANOVA · Confidence Intervals ·
+        Logistic Regression · Effect Sizes · ML Model Evaluation · Python + R
+      </div>
+      <div class="card-tags">
+        <span class="tag">Statistics</span>
+        <span class="tag">Python</span>
+        <span class="tag">R</span>
+        <span class="tag">ML</span>
+        <span class="tag">4 pages</span>
+      </div>
+    </a>
 
-<span class="c-green">-- Bulk positional array acceleration map</span>
-<span class="c-pink">INSERT INTO</span> branch_registry <span class="c-pink">VALUES</span> (402, 'Berlin', 'Germany');</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel yellow">
-                        <h2>2. UPDATE – Modifying Active State Records</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Multivariable Safe Explicit Constraints Overrides:</p>
-                            <pre><span class="c-pink">UPDATE</span> goexplore_sales
-<span class="c-pink">SET</span> 
-    revenue_per_capita = 472.40,
-    currency_code = 'EUR',
-    system_last_updated = <span class="c-cyan">strftime</span>('%Y-%m-%d %H:%M:%S', 'now')
-<span class="c-pink">WHERE</span> country = 'United States' 
-  <span class="c-pink">AND</span> product_type = 'Climbing Equipment';</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel purple">
-                        <h2>3. DELETE FROM – Target Row Discarding</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Selective Database Row Dropping under Criteria Gates:</p>
-                            <pre><span class="c-pink">DELETE FROM</span> session_analytics_logs 
-<span class="c-pink">WHERE</span> tracking_date &lt; <span class="c-cyan">date</span>('now', '-30 days')
-  <span class="c-pink">AND</span> status_flag = 'Expired';</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td class="grid-col">
-                    <div class="panel green">
-                        <h2>4. Bulk Dataset ETL Ingestion Pipelines</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Migrating, Formatting and Transforming Live Inputs (INSERT INTO...SELECT):</p>
-                            <pre><span class="c-pink">INSERT INTO</span> product_performance_report (reporting_year, segment, gross_sales)
-<span class="c-pink">SELECT</span> year, product_type, <span class="c-cyan">SUM</span>(revenue) 
-<span class="c-pink">FROM</span> staging_raw_ingest
-<span class="c-pink">WHERE</span> tracking_status = 'Verified'
-<span class="c-pink">GROUP BY</span> year, product_type;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel cyan">
-                        <h2>5. Correlated Multi-Table Updates</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Updating Records inside Table A using the values of Table B (SQLite Loop):</p>
-                            <pre><span class="c-pink">UPDATE</span> client_stores
-<span class="c-pink">SET</span> operations_manager = (
-    <span class="c-pink">SELECT</span> m.manager_name <span class="c-pink">FROM</span> master_regions m 
-    <span class="c-pink">WHERE</span> m.postal_code = client_stores.zip_code
-)
-<span class="c-pink">WHERE EXISTS</span> (
-    <span class="c-pink">SELECT</span> 1 <span class="c-pink">FROM</span> master_regions m 
-    <span class="c-pink">WHERE</span> m.postal_code = client_stores.zip_code
-);</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel pink">
-                        <h2>6. Modern Idempotent UPSERT Protocols</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Handling Constraints Conflict Anomalies Dynamically on Primary Key Clashes:</p>
-                            <pre><span class="c-pink">INSERT INTO</span> warehouse_inventory (sku, stock_count) 
-<span class="c-pink">VALUES</span> ('CLMB-ACC-SG', 15)
-<span class="c-pink">ON CONFLICT</span>(sku) 
-<span class="c-pink">DO UPDATE SET</span> stock_count = stock_count + <span class="c-purple">excluded</span>.stock_count;</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+    <a class="card card-terminal" href="terminal_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">02 //</span>
+        <span class="card-title">TERMINAL SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Bash essentials · File system navigation · Process management ·
+        Python venv setup · pip · SSH · Warp terminal shortcuts
+      </div>
+      <div class="card-tags">
+        <span class="tag">Bash</span>
+        <span class="tag">Terminal</span>
+        <span class="tag">venv</span>
+        <span class="tag">SSH</span>
+      </div>
+    </a>
 
-            <tr>
-                <td class="grid-col">
-                    <div class="panel yellow">
-                        <h2>7. Temporary Tables & Session Staging Spaces</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Isolating Transient Scratchpad Datasets inside RAM/Local Disks:</p>
-                            <pre><span class="c-pink">CREATE TEMPORARY TABLE</span> temp_sales_matrix (
-    session_id <span class="c-yellow">TEXT</span> <span class="c-pink">PRIMARY KEY</span>,
-    calculated_delta <span class="c-yellow">REAL</span>
-);
-<span class="c-pink">INSERT INTO</span> temp_sales_matrix 
-<span class="c-pink">SELECT</span> token, (revenue - 100) <span class="c-pink">FROM</span> live_stream;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel purple">
-                        <h2>8. Trigger Automation Workarounds</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Automating System Side-Effects & Audit Trails within SQLite Pipelines:</p>
-                            <pre><span class="c-pink">CREATE TRIGGER</span> trg_audit_sales_insert
-<span class="c-pink">AFTER INSERT ON</span> goexplore_sales
-<span class="c-pink">BEGIN</span>
-    <span class="c-pink">INSERT INTO</span> system_audit_logs(event_type, table_target, row_key, timestamp)
-    <span class="c-pink">VALUES</span> ('INSERT', 'goexplore_sales', <span class="c-purple">NEW</span>.order_id, <span class="c-cyan">datetime</span>('now'));
-<span class="c-pink">END</span>;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel green">
-                        <h2>9. Enterprise Stored Procedures Specs</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Multi-Statement Procedural Blocks Block Blueprint (PostgreSQL/BigQuery Reference):</p>
-                            <pre><span class="c-pink">CREATE PROCEDURE</span> execute_transfer(sender <span class="c-yellow">INT</span>, receiver <span class="c-yellow">INT</span>, val <span class="c-yellow">NUMERIC</span>)
-<span class="c-pink">LANGUAGE</span> plpgsql <span class="c-pink">AS</span> $$
-<span class="c-pink">BEGIN</span>
-    <span class="c-pink">UPDATE</span> accounts <span class="c-pink">SET</span> cash = cash - val <span class="c-pink">WHERE</span> id = sender;
-    <span class="c-pink">UPDATE</span> accounts <span class="c-pink">SET</span> cash = cash + val <span class="c-pink">WHERE</span> id = receiver;
-    <span class="c-pink">COMMIT</span>;
-<span class="c-pink">END</span>; $$;</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-        
-        <div class="black-panel">
-            <h2>🚨 TRANSACTION JOURNAL: CORRUPT STATE GUARDRAILS & FILE-LOCK PROTOCOLS</h2>
-            <div class="panel-content">
-                <table>
-                    <tr>
-                        <td>• <b>Global Overwrite Warnings:</b> Running an <code>UPDATE</code> or <code>DELETE</code> statement without appending explicit <code>WHERE</code> parameters mutates every structural record. Validate footprints using <code>SELECT COUNT(*)</code> maps first.</td>
-                        <td>• <b>ACID State Controls:</b> Wrap sensitive code modifications inside safe active runtime boundaries: <code>BEGIN TRANSACTION;</code> &rarr; verify row alteration readouts &rarr; call <code>COMMIT;</code> (or execute <code>ROLLBACK;</code> on faults).</td>
-                        <td>• <b>The Deadlock Threat:</b> SQLite locks the physical data file during active writing states. Unfinished open transaction boundaries started in Python/VS-Code freeze DBeaver processes.</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
+    <a class="card card-git" href="git_github_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">03 //</span>
+        <span class="card-title">GIT &amp; GITHUB SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Git fundamentals · Branching · Merging · Pull Requests ·
+        GitHub workflow · Common disaster recovery commands
+      </div>
+      <div class="card-tags">
+        <span class="tag">Git</span>
+        <span class="tag">GitHub</span>
+        <span class="tag">Version Control</span>
+      </div>
+    </a>
 
-    <div class="page">
-        <table class="header-table">
-            <tr>
-                <td class="header-title">SQLITE SURVIVAL WALL [DDL SCHEMA LAYOUT & ENGINE PERFORMANCE]</td>
-                <td class="header-edition">ANDY'S EDITION V2.0 // HYBRID 3x3 MATRIX SYSTEM // PAGE 3</td>
-            </tr>
-        </table>
+    <a class="card card-viz" href="data_visualization_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">04 //</span>
+        <span class="card-title">DATA VISUALIZATION SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Matplotlib OOP architecture · Seaborn Figure vs Axes level · Relational, 
+        Distribution & Categorical master matrices · Plotly Web Express · R ggplot2 framework
+      </div>
+      <div class="card-tags">
+        <span class="tag">Data Viz</span>
+        <span class="tag">Seaborn</span>
+        <span class="tag">Plotly</span>
+        <span class="tag">ggplot2</span>
+        <span class="tag">A3 Print</span>
+      </div>
+    </a>
 
-        <table class="grid-table">
-            <tr>
-                <td class="grid-col">
-                    <div class="panel green">
-                        <h2>1. CREATE TABLE Schema Geometry & Core Constraints</h2>
-                        <div class="panel-content">
-                            <pre><span class="c-pink">CREATE TABLE</span> enterprise_nodes (
-    node_id <span class="c-yellow">INTEGER</span> <span class="c-pink">PRIMARY KEY</span> <span class="c-purple">AUTOINCREMENT</span>,
-    node_hash <span class="c-yellow">TEXT</span> <span class="c-pink">UNIQUE</span> <span class="c-pink">NOT NULL</span>,
-    location_tier <span class="c-yellow">TEXT</span> <span class="c-pink">DEFAULT</span> 'HQ-Hamburg',
-    budget_allocation <span class="c-yellow">REAL</span>,
-    parent_id <span class="c-yellow">INTEGER</span>,
-    
-    <span class="c-pink">CONSTRAINT</span> chk_min_allocation <span class="c-pink">CHECK</span> (budget_allocation &gt;= 0.0),
-    <span class="c-pink">FOREIGN KEY</span> (parent_id) <span class="c-pink">REFERENCES</span> conglomerates (id) 
-        <span class="c-pink">ON DELETE CASCADE</span>
-);</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel purple">
-                        <h2>2. SQLite Type Affinity System</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Dynamic Engine Allocation & Physical Storage Profiles Mapping Matrices:</p>
-                            <table class="matrix-table">
-                                <thead>
-                                    <tr><th>Affinity</th><th>Storage Profile Space</th><th>Valid Type Keywords</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td><code>INTEGER</code></td><td>Signed integers up to 8 bytes</td><td>INT, BIGINT, TINYINT, SMALLINT, BOOLEAN</td></tr>
-                                    <tr><td><code>REAL</code></td><td>8-Byte IEEE float variables</td><td>REAL, FLOAT, DOUBLE, DOUBLE PRECISION</td></tr>
-                                    <tr><td><code>TEXT</code></td><td>Character sequences (UTF-8/16)</td><td>VARCHAR, CHAR, TEXT, CLOB, DATE, DATETIME</td></tr>
-                                    <tr><td><code>BLOB</code></td><td>Raw unparsed byte fields</td><td>BLOB, BINARY (Images, object arrays)</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel yellow">
-                        <h2>3. ALTER TABLE Schema Evolution Limitations</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Native System Column Modifications & Table Structural Alterations:</p>
-                            <pre><span class="c-green">-- Append fresh column fields onto an active production structure</span>
-<span class="c-pink">ALTER TABLE</span> enterprise_nodes <span class="c-pink">ADD COLUMN</span> routing_index <span class="c-yellow">TEXT</span>;
+    <a class="card card-pcep" href="pcep_exam_sheet.html">
+      <div class="card-header">
+        <span class="card-num">05 //</span>
+        <span class="card-title">PCEP PYTHON SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Python Core Architecture · Variable vs Value · Function call flows & placeholders · Loops & range() boundary rules · Structural data structures comparison matrix · String methods · Truthy/Falsy states · Error catching & built-in hierarchy analysis
+      </div>
+      <div class="card-tags">
+        <span class="tag">Python</span>
+        <span class="tag">PCEP</span>
+        <span class="tag">Exam Prep</span>
+        <span class="tag">A3 Print</span>
+      </div>
+    </a>
 
-<span class="c-green">-- Rename physical disk objects inside the database dictionary</span>
-<span class="c-pink">ALTER TABLE</span> enterprise_nodes <span class="c-pink">RENAME TO</span> active_nodes_v2;</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td class="grid-col">
-                    <div class="panel purple">
-                        <h2>4. The Shadow Table Cloning Workaround</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Overriding SQLite Constraints Altering Constraints & Dropping Attributes:</p>
-                            <pre><span class="c-pink">CREATE TABLE</span> nodes_shadow (id <span class="c-yellow">INTEGER</span> <span class="c-pink">PRIMARY KEY</span>, hash <span class="c-yellow">TEXT</span>, cash <span class="c-yellow">REAL</span>);
-<span class="c-pink">INSERT INTO</span> nodes_shadow(id, hash, cash) 
-<span class="c-pink">SELECT</span> node_id, node_hash, budget_allocation <span class="c-pink">FROM</span> active_nodes_v2;
-<span class="c-pink">DROP TABLE</span> active_nodes_v2;
-<span class="c-pink">ALTER TABLE</span> nodes_shadow <span class="c-pink">RENAME TO</span> enterprise_nodes;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel yellow">
-                        <h2>5. Virtual Data View Architecture</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Decoupling Application Layers via Stored Abstract Data Compilations:</p>
-                            <pre><span class="c-green">-- Virtual view layers cache the logical query definition instead of data strings</span>
-<span class="c-pink">CREATE VIEW</span> v_hamburg_premium_hubs <span class="c-pink">AS</span>
-<span class="c-pink">SELECT</span> node_hash, budget_allocation <span class="c-pink">FROM</span> enterprise_nodes 
-<span class="c-pink">WHERE</span> location_tier = 'HQ-Hamburg' <span class="c-pink">AND</span> budget_allocation &gt; 75000.00;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel cyan">
-                        <h2>6. Recursive CTE Matrix Engines</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Generating Time-Series Ranges and Hierarchical Loops from scratch via SQL:</p>
-                            <pre><span class="c-pink">WITH RECURSIVE</span> tracking_calendar(calendar_day) <span class="c-pink">AS</span> (
-    <span class="c-pink">SELECT</span> <span class="c-cyan">date</span>('2015-01-12') <span class="c-green">-- Anchor Member initialization point</span>
-    <span class="c-pink">UNION ALL</span>
-    <span class="c-pink">SELECT</span> <span class="c-cyan">date</span>(calendar_day, '+1 day') <span class="c-pink">FROM</span> tracking_calendar 
-    <span class="c-pink">LIMIT</span> 42 <span class="c-green">-- Loop hard gate boundary termination constraint</span>
-)
-<span class="c-pink">SELECT</span> calendar_day <span class="c-pink">FROM</span> tracking_calendar;</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+    <a class="card card-sqlite" href="sqlite_cheat_sheet.html">
+      <div class="card-header">
+        <span class="card-num">06 //</span>
+        <span class="card-title">SQLITE SURVIVAL WALL</span>
+      </div>
+      <div class="card-desc">
+        Logical Order of Execution · Advanced Relational Joins &amp; Anti-Joins · Window Functions &amp; Framing Bounds · Matrix Pivoting/Unpivoting Workarounds · DML Mutations &amp; ACID Transactions · DDL Schema Geometry · Recursive CTE Loops · Query Optimization (EXPLAIN QUERY PLAN)
+      </div>
+      <div class="card-tags">
+        <span class="tag">SQL</span>
+        <span class="tag">SQLite</span>
+        <span class="tag">DBeaver</span>
+        <span class="tag">KNIME</span>
+        <span class="tag">A3 Print</span>
+      </div>
+    </a>
 
-            <tr>
-                <td class="grid-col">
-                    <div class="panel cyan">
-                        <h2>7. Multi-Column & Covering Indexes</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Accelerating DBeaver Query Speeds across Compound Key Filters:</p>
-                            <pre><span class="c-green">-- Optimizes query scanning routines targeting twin properties concurrently</span>
-<span class="c-pink">CREATE INDEX</span> idx_node_loc_budget <span class="c-pink">ON</span> enterprise_nodes (location_tier, budget_allocation);
-<span class="c-green">-- Partial conditional index optimization footprint mapping</span>
-<span class="c-pink">CREATE INDEX</span> idx_prem_active <span class="c-pink">ON</span> enterprise_nodes (budget_allocation) <span class="c-pink">WHERE</span> operational_status=1;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel purple">
-                        <h2>8. EXPLAIN QUERY PLAN Diagnostics</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Prefix strings inside DBeaver consoles to trace algorithmic execution paths:</p>
-                            <pre><span class="c-pink">EXPLAIN QUERY PLAN</span> 
-<span class="c-pink">SELECT</span> c.manager_name, <span class="c-cyan">SUM</span>(s.revenue) 
-<span class="c-pink">FROM</span> goexplore_sales s 
-<span class="c-pink">JOIN</span> retailers c <span class="c-pink">ON</span> s.retailer_id = c.id 
-<span class="c-pink">WHERE</span> s.country = 'Germany' <span class="c-pink">GROUP BY</span> c.manager_name;</pre>
-                        </div>
-                    </div>
-                </td>
-                <td class="grid-col">
-                    <div class="panel green">
-                        <h2>9. Pragma Engine Configuration Tuning</h2>
-                        <div class="panel-content">
-                            <p style="margin:0; font-weight:bold;">Modify Core Database Engine Parameters directly from your Script Console:</p>
-                            <pre><span class="c-green">-- Explicitly switch on foreign key cascade constraint checking checks</span>
-<span class="c-pink">PRAGMA</span> foreign_keys = <span class="c-purple">ON</span>;
-<span class="c-green">-- Memory cache tuning parameters adjustment optimization pass</span>
-<span class="c-pink">PRAGMA</span> cache_size = -64000; <span class="c-green">-- Involves mapping temporary buffers to RAM</span>
-<span class="c-pink">PRAGMA</span> synchronous = <span class="c-purple">OFF</span>;</pre>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-        
-        <div class="black-panel">
-            <h2>🚨 TUNING PROTOCOLS: CORE B-TREE RUNTIME DIAGNOSTICS & VIEW INHERITANCE</h2>
-            <div class="panel-content">
-                <table>
-                    <tr>
-                        <td>• <b>Query Plan Scans:</b> If execution paths display <code>SCAN TABLE</code> logs, the engine runs row-by-row memory searches. Optimized pipelines must target <code>SEARCH TABLE ... USING INDEX</code> routes instead!</td>
-                        <td>• <b>The Write Penalty:</b> Appending indexing nodes accelerates <code>WHERE</code> and <code>JOIN ON</code> matching significantly. However, it slows down all <code>INSERT</code> loops as B-Tree structures recalculate.</td>
-                        <td>• <b>View Inheritance traps:</b> Views are completely virtual and persist zero row blocks on physical disks. Utilizing nested views inside massive join pipelines causes the compilation parser tree to collapse into recursive evaluation overloads.</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
+  </div>
 
+  <div class="footer">
+    <span>© 2026 Andreas Politzer</span>
+    <a href="https://github.com/andreas-politzer">github.com/andreas-politzer</a>
+  </div>
+
+</div>
 </body>
 </html>
